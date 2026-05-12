@@ -43,9 +43,20 @@ profile_info: |
   {verified}
 verified_user: "Tasdiqlangan"
 not_verified_user: "Tasdiqlanmagan"
+verify_requirements: |
+  Hisobni tasdiqlash orqali siz reytingli testlar o'tkaza olasiz
+  Buning uchun siz kamida 20,000 obunachili kanalga egalik qilishingiz kerak
+  Bot kanal obunachilarini hisoblashi uchun shu kanalda admin bo'lishi kerak
+already_verified: "Sizning hisobingiz allaqachon tasdiqlangan"
+start_verify: "✅ Tasdiqlashni boshlash"
+send_channel_data: "Quyidagi tugma orqali kanal ma'lumotlarini yuboring"
+bot_not_admin: "Bot kanalda admin emas"
+user_not_admin: "Siz kanalda admin emassiz"
+not_enough_members: "Kanal obunachilari soni yetarli emas"
+user_verified: "✅ Hisobingiz muvaffaqiyatli tasdiqlandi"
 canceled: "Bekor qilindi"
 tests: "📝 Testlar"
-question_bank: "🏦 Savollar banki"
+resources: "🗂 O'quv resurslari"
 vocabulary: "📚 So'z yodlash"
 leaderboard: "🏆 Faollar"
 profile: "👤 Profil"
@@ -53,6 +64,7 @@ change_lang: "🌐 Tilni o'zgartirish"
 host_test: "➕ Test o'tkazish"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
+send_channel: "📢 Kanal yuborish"
 yes: "✅ Ha"
 no: "❌ Yo'q"
 cancel: "🚫 Bekor qilish"

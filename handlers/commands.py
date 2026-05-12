@@ -1,10 +1,11 @@
 from aiogram import Router, F
 from aiogram.filters import CommandStart
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from database import db
 from keyboards.inline import auto_detected_lang, lang_menu
-from keyboards.reply import start_keyboard
+from keyboards.reply import start_keyboard, tests_keyboard
 from utils.filters import Text
 from utils.gettext import locales, _
 
@@ -54,3 +55,12 @@ async def set_lang(callback: CallbackQuery):
 async def back(message: Message):
     lang = await db.lang(message.from_user.id)
     await message.answer(_("main_menu", lang), reply_markup=start_keyboard(lang))
+
+
+@router.message(Text("cancel"))
+async def cancel(message: Message, state: FSMContext):
+    lang = await db.lang(message.from_user.id)
+
+    await state.clear()
+    await message.answer(_("canceled", lang),
+                         reply_markup=start_keyboard(lang))

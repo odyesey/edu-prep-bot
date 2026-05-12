@@ -24,15 +24,6 @@ async def host_test(message: Message, state: FSMContext):
     await message.answer(_("test_name", lang), reply_markup=cancel_button(lang))
 
 
-@router.message(StateFilter(HostTest), Text("cancel"))
-async def cancel(message: Message, state: FSMContext):
-    lang = await db.lang(message.from_user.id)
-
-    await state.clear()
-    await message.answer(_("canceled", lang),
-                         reply_markup=tests_keyboard(lang))
-
-
 @router.message(HostTest.name, F.text)
 async def set_name(message: Message, state: FSMContext):
     lang = await db.lang(message.from_user.id)
@@ -146,6 +137,7 @@ async def check_answers(message: Message, state: FSMContext):
 
         await message.answer(_("test_added", lang),
                              reply_markup=tests_keyboard(lang))
+        await state.clear()
 
 
 @router.message(HostTest.file, ~F.document)

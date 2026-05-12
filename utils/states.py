@@ -7,3 +7,6 @@ class HostTest(StatesGroup):
     time = State()
     duration = State()
     answers = State()
+
+class Verify(StatesGroup):
+    channel = State()

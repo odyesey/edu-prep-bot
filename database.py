@@ -88,6 +88,10 @@ class Database(Postgres):
         sql = "SELECT lang FROM users WHERE user_id = $1"
         return await self.execute(sql, user_id, fetch_val=True)
 
+    async def verify(self, user_id: int):
+        sql = "UPDATE users SET verified = $1 WHERE user_id = $2"
+        await self.execute(sql, True, user_id, execute=True)
+
     async def is_verified(self, user_id: int) -> bool:
         sql = "SELECT verified FROM users WHERE user_id = $1"
         return await self.execute(sql, user_id, fetch_val=True)
