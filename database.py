@@ -43,7 +43,7 @@ class Postgres:
 
 
 class Database(Postgres):
-    async def add_user(self, name: str, user_id: int, lang: str) -> None:
+    async def add_user(self, name: str, user_id: int, lang: str):
         sql = "INSERT INTO users (name, user_id, lang) VALUES ($1 , $2, $3)"
         await self.execute(sql, name, user_id, lang, execute=True)
 
@@ -54,6 +54,7 @@ class Database(Postgres):
         return bool(result)
 
     async def add_test(self,
+                       rated: bool,
                        name: str,
                        file_id: str,
                        content_type: str,
@@ -61,12 +62,12 @@ class Database(Postgres):
                        start_time: datetime,
                        duration: timedelta,
                        answers: list[str]
-                       ) -> None:
+                       ):
         sql = ("INSERT INTO "
                "tests (rated, name, file_id, content_type, description, start_time, duration, answers)"
                "VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
 
-        await self.execute(sql, False,
+        await self.execute(sql, rated,
                            name, file_id,
                            content_type, description,
                            start_time, duration,
@@ -79,8 +80,24 @@ class Database(Postgres):
     async def get_rating(self, user_id: int) -> int:
         sql = "SELECT rating FROM users WHERE user_id = $1"
         return await self.execute(sql, user_id, fetch_val=True)
+    
+    async def add_resource(self,
+                           user_id: int,
+                           title: str,
+                           file_id: str,
+                           content_type: str,
+                           description: str,
+                           keywords: list[str],
+                           ):
+        sql = ("INSERT INTO "
+               "resources (user_id, title, file_id, content_type, description, keywords)"
+               "VALUES ($1, $2, $3, $4, $5, $6)")
+        await self.execute(sql, user_id,
+                           title, file_id,
+                           content_type, description,
+                           keywords, execute=True)
 
-    async def change_lang(self, user_id: int, lang: str) -> None:
+    async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"
         await self.execute(sql, user_id, lang, execute=True)
 

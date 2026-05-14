@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.filters import CommandStart
+from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -58,6 +58,7 @@ async def back(message: Message):
 
 
 @router.message(Text("cancel"))
+@router.message(Command("cancel"))
 async def cancel(message: Message, state: FSMContext):
     lang = await db.lang(message.from_user.id)
 

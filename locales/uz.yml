@@ -10,8 +10,21 @@ welcome: >
   Bu yerdagi hamma materiallar "odamlardan odamlarga" ko'rinishida. Ya'ni istagan odam o'zining materiallarini yuklashi mumkin
 start: "🔄️ Bot muvaffaqiyatli yangilandi"
 main_menu: "🔝 Bosh menyu"
+verify_requirements: |
+  Hisobni tasdiqlash orqali siz reytingli testlar o'tkaza olasiz
+  Buning uchun siz kamida 20,000 obunachili kanalga egalik qilishingiz kerak
+  Bot kanal obunachilarini hisoblashi uchun shu kanalda admin bo'lishi kerak
+already_verified: "Sizning hisobingiz allaqachon tasdiqlangan"
+start_verify: "✅ Tasdiqlashni boshlash"
+send_channel_data: "Quyidagi tugma orqali kanal ma'lumotlarini yuboring"
+bot_not_admin: "Bot kanalda admin emas"
+user_not_admin: "Siz kanalda admin emassiz"
+not_enough_members: "Kanal obunachilari soni yetarli emas"
+user_verified: "✅ Hisobingiz muvaffaqiyatli tasdiqlandi"
 tests_menu: "📄 Testlar menyusi"
+test_rated: "Bu reytingli testmi?"
 test_name: "Test nomini kiriting"
+not_rated_test_name: "Reytingsiz test nomini kiriting"
 invalid_test_name: "Test nomi faqat matndan iborat bo'lishi kerak"
 send_test_file: "Test savollarini yagona fayl yoki rasm ko'rinishida yuboring"
 test_description_detected: "Siz yuborgan fayl/rasm tavsifini test haqida ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
@@ -33,8 +46,7 @@ enter_test_answers: |
   3. 48
   4. 12.8
 invalid_test_answers: "Quyidagi javoblarda format xatoligi aniqlandi"
-test_added: "Test muvaffaqiyatli qo'shildi"
-invalid_format: "Noto'g'ri format"
+test_added: "✅ Test muvaffaqiyatli qo'shildi"
 profile_info: |
   Ism: {name}
   ID: {user_id}
@@ -43,17 +55,23 @@ profile_info: |
   {verified}
 verified_user: "Tasdiqlangan"
 not_verified_user: "Tasdiqlanmagan"
-verify_requirements: |
-  Hisobni tasdiqlash orqali siz reytingli testlar o'tkaza olasiz
-  Buning uchun siz kamida 20,000 obunachili kanalga egalik qilishingiz kerak
-  Bot kanal obunachilarini hisoblashi uchun shu kanalda admin bo'lishi kerak
-already_verified: "Sizning hisobingiz allaqachon tasdiqlangan"
-start_verify: "✅ Tasdiqlashni boshlash"
-send_channel_data: "Quyidagi tugma orqali kanal ma'lumotlarini yuboring"
-bot_not_admin: "Bot kanalda admin emas"
-user_not_admin: "Siz kanalda admin emassiz"
-not_enough_members: "Kanal obunachilari soni yetarli emas"
-user_verified: "✅ Hisobingiz muvaffaqiyatli tasdiqlandi"
+resource_title: "Resurs nomini kiriting"
+resource_file: "Yagona resurs faylini yuboring (fayl, video, rasm)"
+resource_description: >
+  Resurs haqida ma'lumot yuboring.
+  Bu boshqa foydalanuvchilarga resurs nima haqida ekanligini bilishga yordam beradi
+resource_description_limit: |
+  Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
+  Siz yuborgan matn uzunligi: {desc_len}
+resource_keywords: |
+  O'ntagacha bo'lgan kalit so'zlarni vergul bilan ajratgan holda yuboring
+  Ular boshqa foydalanuvchilarga qidiruvni osonlashtiradi
+  Namuna: sat, math, practice
+resource_keywords_limit: "Kalit so'zlar o'ntadan oshib ketdi"
+resource_keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
+resource_keywords_error: "Kalit so'zlarda xatoliklar topildi:"
+resource_added: "✅ Resurs muvaffaqiyatli qo'shildi"
+invalid_format: "Noto'g'ri format"
 canceled: "Bekor qilindi"
 tests: "📝 Testlar"
 resources: "🗂 O'quv resurslari"
@@ -62,6 +80,7 @@ leaderboard: "🏆 Faollar"
 profile: "👤 Profil"
 change_lang: "🌐 Tilni o'zgartirish"
 host_test: "➕ Test o'tkazish"
+add_resource: "➕ Resurs qo'shish"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
 send_channel: "📢 Kanal yuborish"

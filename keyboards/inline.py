@@ -24,6 +24,11 @@ def yes_no(lang: str, prefix: str) -> InlineKeyboardMarkup:
          InlineKeyboardButton(text=_("no", lang), callback_data=prefix+"no")]
     ])
 
+def resources_keyboard(lang: str) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=_("add_resource", lang), callback_data="resources_add")],
+    ])
+
 def verify_button(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=_("start_verify", lang), callback_data="verify")]

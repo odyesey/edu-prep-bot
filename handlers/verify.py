@@ -2,7 +2,6 @@ from aiogram import Router, Bot, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
-from aiogram.exceptions import TelegramBadRequest
 
 from database import db
 from keyboards.inline import verify_button
@@ -64,4 +63,3 @@ async def check_channel(message: Message, state: FSMContext, bot: Bot):
         await state.clear()
     else:
         await message.answer(_("not_enough_members", lang))
-

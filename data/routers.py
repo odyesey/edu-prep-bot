@@ -1,4 +1,4 @@
-from handlers import commands, leaderboard, profile, change_lang, tests, host_test, verify
+from handlers import commands, leaderboard, profile, change_lang, verify, tests, host_test, resources
 
 routers_list = [
     commands.router,
@@ -6,6 +6,7 @@ routers_list = [
     leaderboard.router,
     profile.router,
     change_lang.router,
-    host_test.router,
     verify.router,
+    host_test.router,
+    resources.router,
 ]

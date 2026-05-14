@@ -8,20 +8,39 @@ from datetime import datetime, timedelta
 from database import db
 from keyboards.inline import yes_no
 from keyboards.reply import tests_keyboard, cancel_button
-from utils.answers import validate_answers
+from utils.tools import validate_answers
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import HostTest
 
 router = Router()
 
-
 @router.message(Text("host_test"))
 async def host_test(message: Message, state: FSMContext):
-    lang = await db.lang(message.from_user.id)
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+
+    await state.update_data(rated=False)
+
+    if await db.is_verified(user_id):
+        await state.set_state(HostTest.rated)
+        await message.answer(_("test_rated", lang), reply_markup=yes_no(lang, "rated_"))
+    else:
+        await state.set_state(HostTest.name)
+        await message.answer(_("not_rated_test_name", lang), reply_markup=cancel_button(lang))
+
+
+@router.callback_query(F.data.startswith("rated"))
+async def test_name(callback: CallbackQuery, state: FSMContext):
+    lang = await db.lang(callback.from_user.id)
+    status = callback.data.split("_")[1]
+
+    if status == "yes":
+        await state.update_data(rated=True)
 
     await state.set_state(HostTest.name)
-    await message.answer(_("test_name", lang), reply_markup=cancel_button(lang))
+    await callback.message.delete()
+    await callback.message.answer(_("test_name", lang), reply_markup=cancel_button(lang))
 
 
 @router.message(HostTest.name, F.text)
@@ -127,7 +146,8 @@ async def check_answers(message: Message, state: FSMContext):
     else:
         data = await state.get_data()
 
-        await db.add_test(name=data['name'],
+        await db.add_test(rated=data['rated'],
+                          name=data['name'],
                           file_id=data['file_id'],
                           content_type=data['content_type'],
                           description=data['description'],

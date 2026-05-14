@@ -1,6 +1,10 @@
 from aiogram.fsm.state import State, StatesGroup
 
+class Verify(StatesGroup):
+    channel = State()
+
 class HostTest(StatesGroup):
+    rated = State()
     name = State()
     file = State()
     description = State()
@@ -8,5 +12,8 @@ class HostTest(StatesGroup):
     duration = State()
     answers = State()
 
-class Verify(StatesGroup):
-    channel = State()
+class AddResource(StatesGroup):
+    title = State()
+    file = State()
+    description = State()
+    keywords = State()
