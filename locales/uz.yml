@@ -28,6 +28,9 @@ not_rated_test_name: "Reytingsiz test nomini kiriting"
 invalid_test_name: "Test nomi faqat matndan iborat bo'lishi kerak"
 send_test_file: "Test savollarini yagona fayl yoki rasm ko'rinishida yuboring"
 test_description_detected: "Siz yuborgan fayl/rasm tavsifini test haqida ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
+test_caption_limit: >
+  Fayl/rasmga yozilgan izoh juda uzun.
+  Iltimos 1024 ta belgidan oshmagan tavsif yuboring
 enter_test_description: "Test haqidagi ma'lumotni kiriting"
 invalid_test_description: "Test haqida ma'lumot faqat matndan iborat bo'lishi kerak"
 enter_test_timestamp: |
@@ -59,14 +62,11 @@ resource_title: "Resurs nomini kiriting"
 resource_file: "Yagona resurs faylini yuboring (fayl, video, rasm)"
 resource_use_caption: "Resursga yozilgan izohni resurs uchun ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
 resource_caption_limit: >
-  Faylga yozilgan izoh juda uzun.
+  Resursga yozilgan izoh juda uzun.
   Iltimos 1024 ta belgidan oshmagan resurs uchun ma'lumot yuboring
 resource_description: >
   Resurs haqida ma'lumot yuboring.
   Bu boshqa foydalanuvchilarga resurs nima haqida ekanligini bilishga yordam beradi
-resource_description_limit: |
-  Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
-  Siz yuborgan matn uzunligi: {desc_len}
 resource_keywords: |
   O'ntagacha bo'lgan kalit so'zlarni vergul bilan ajratgan holda yuboring
   Ular boshqa foydalanuvchilarga qidiruvni osonlashtiradi
@@ -75,6 +75,9 @@ resource_keywords_limit: "Kalit so'zlar o'ntadan oshib ketdi"
 resource_keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
 resource_keywords_error: "Kalit so'zlarda xatoliklar topildi:"
 resource_added: "✅ Resurs muvaffaqiyatli qo'shildi"
+description_limit: |
+  Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
+  Siz yuborgan matn uzunligi: {desc_len}
 invalid_format: "Noto'g'ri format"
 canceled: "Bekor qilindi"
 tests: "📝 Testlar"

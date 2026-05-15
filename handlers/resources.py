@@ -51,18 +51,16 @@ async def file(message: Message, state: FSMContext):
     elif message.photo: content_type = "photo"; file_id = message.photo[-1].file_id
 
     await state.update_data(file_id=file_id, content_type=content_type)
+    await state.set_state(AddResource.description)
 
     if message.caption:
         if len(message.caption) <= 1024:
             await state.update_data(description=message.caption)
-            await state.set_state(AddResource.description)
             await message.answer(_("resource_use_caption", lang),
                                  reply_markup=yes_no(lang, "description_"))
         else:
-            await state.set_state(AddResource.description)
             await message.answer(_("resource_caption_limit", lang))
     else:
-        await state.set_state(AddResource.description)
         await message.answer(_("resource_description", lang))
 
 
@@ -77,13 +75,13 @@ async def description(message: Message, state: FSMContext):
         await state.set_state(AddResource.keywords)
         await message.answer(_("resource_keywords", lang))
     else:
-        await message.answer(_("resource_description_limit", lang).format(
+        await message.answer(_("description_limit", lang).format(
             desc_len=desc_len
         ))
 
 
 @router.callback_query(AddResource.description, F.data.startswith("description"))
-async def description(callback: CallbackQuery, state: FSMContext):
+async def handle_callback(callback: CallbackQuery, state: FSMContext):
     lang = await db.lang(callback.from_user.id)
     decision = callback.data.split("_")[1]
 

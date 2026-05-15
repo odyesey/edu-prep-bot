@@ -64,18 +64,35 @@ async def test_file(message: Message, state: FSMContext):
         await state.update_data(file_id=message.photo[-1].file_id,
                                 content_type="photo")
 
+    await state.set_state(HostTest.description)
+
     if message.caption:
-        await state.update_data(description=message.caption)
-
-        await message.answer(_("test_description_detected", lang),
-                             reply_markup=yes_no(lang, "description_"))
-
+        if len(message.caption) <= 1024:
+            await state.update_data(description=message.caption)
+            await message.answer(_("test_description_detected", lang),
+                                 reply_markup=yes_no(lang, "description_"))
+        else:
+            await message.answer(_("test_caption_limit", lang))
     else:
-        await state.set_state(HostTest.description)
         await message.answer(_("enter_test_description", lang))
 
 
-@router.callback_query(HostTest.file, F.data.startswith("description"))
+@router.message(HostTest.description, F.text)
+async def test_description(message: Message, state: FSMContext):
+    lang = await db.lang(message.from_user.id)
+    desc_len = len(message.text)
+
+    if desc_len <= 1024:
+        await state.update_data(description=message.text)
+        await state.set_state(HostTest.time)
+        await message.answer(_("enter_test_timestamp", lang))
+    else:
+        await message.answer(_("description_limit", lang).format(
+            desc_len=desc_len
+        ))
+
+
+@router.callback_query(HostTest.description, F.data.startswith("description"))
 async def handle_callback(callback: CallbackQuery, state: FSMContext):
     lang = await db.lang(callback.from_user.id)
     decision = callback.data.split("_")[1]
@@ -86,18 +103,7 @@ async def handle_callback(callback: CallbackQuery, state: FSMContext):
         await state.set_state(HostTest.time)
         await callback.message.answer(_("enter_test_timestamp", lang))
     else:
-        await state.set_state(HostTest.description)
-        await callback.message.edit_text(_("enter_test_description", lang))
-
-
-@router.message(HostTest.description, F.text)
-async def test_description(message: Message, state: FSMContext):
-    lang = await db.lang(message.from_user.id)
-
-    await state.update_data(description=message.text)
-    await state.set_state(HostTest.time)
-
-    await message.answer(_("enter_test_timestamp", lang))
+        await callback.message.answer(_("enter_test_description", lang))
 
 
 @router.message(HostTest.time, F.text)
