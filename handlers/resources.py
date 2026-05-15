@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from database import db
-from keyboards.inline import resources_keyboard
+from keyboards.inline import resources_keyboard, yes_no
 from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
@@ -51,8 +51,19 @@ async def file(message: Message, state: FSMContext):
     elif message.photo: content_type = "photo"; file_id = message.photo[-1].file_id
 
     await state.update_data(file_id=file_id, content_type=content_type)
-    await state.set_state(AddResource.description)
-    await message.answer(_("resource_description", lang))
+
+    if message.caption:
+        if len(message.caption) <= 1024:
+            await state.update_data(description=message.caption)
+            await state.set_state(AddResource.description)
+            await message.answer(_("resource_use_caption", lang),
+                                 reply_markup=yes_no(lang, "description_"))
+        else:
+            await state.set_state(AddResource.description)
+            await message.answer(_("resource_caption_limit", lang))
+    else:
+        await state.set_state(AddResource.description)
+        await message.answer(_("resource_description", lang))
 
 
 @router.message(AddResource.description, F.text)
@@ -69,6 +80,20 @@ async def description(message: Message, state: FSMContext):
         await message.answer(_("resource_description_limit", lang).format(
             desc_len=desc_len
         ))
+
+
+@router.callback_query(AddResource.description, F.data.startswith("description"))
+async def description(callback: CallbackQuery, state: FSMContext):
+    lang = await db.lang(callback.from_user.id)
+    decision = callback.data.split("_")[1]
+
+    await callback.message.delete()
+
+    if decision == "yes":
+        await state.set_state(AddResource.keywords)
+        await callback.message.answer(_("resource_keywords", lang))
+    else:
+        await callback.message.answer(_("resource_description", lang))
 
 
 @router.message(AddResource.keywords, F.text)

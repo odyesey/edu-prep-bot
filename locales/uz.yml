@@ -57,6 +57,10 @@ verified_user: "Tasdiqlangan"
 not_verified_user: "Tasdiqlanmagan"
 resource_title: "Resurs nomini kiriting"
 resource_file: "Yagona resurs faylini yuboring (fayl, video, rasm)"
+resource_use_caption: "Resursga yozilgan izohni resurs uchun ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
+resource_caption_limit: >
+  Faylga yozilgan izoh juda uzun.
+  Iltimos 1024 ta belgidan oshmagan resurs uchun ma'lumot yuboring
 resource_description: >
   Resurs haqida ma'lumot yuboring.
   Bu boshqa foydalanuvchilarga resurs nima haqida ekanligini bilishga yordam beradi
@@ -84,7 +88,7 @@ add_resource: "➕ Resurs qo'shish"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
 send_channel: "📢 Kanal yuborish"
-yes: "✅ Ha"
-no: "❌ Yo'q"
+yes_: "✅ Ha"
+no_: "❌ Yo'q"
 cancel: "🚫 Bekor qilish"
 back: "🔙 Ortga qaytish"

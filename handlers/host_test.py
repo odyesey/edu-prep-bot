@@ -80,6 +80,8 @@ async def handle_callback(callback: CallbackQuery, state: FSMContext):
     lang = await db.lang(callback.from_user.id)
     decision = callback.data.split("_")[1]
 
+    await callback.message.delete()
+
     if decision == "yes":
         await state.set_state(HostTest.time)
         await callback.message.answer(_("enter_test_timestamp", lang))
