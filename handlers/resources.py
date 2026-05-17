@@ -1,7 +1,10 @@
-from aiogram import Router, F
-from aiogram.filters import StateFilter
+from aiogram import Router, Bot, F
+from aiogram.filters import CommandStart, CommandObject, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import (Message, CallbackQuery,
+                           InlineQuery, InlineQueryResultArticle,
+                           InputTextMessageContent)
+from aiogram.utils.deep_linking import create_start_link
 
 from database import db
 from keyboards.inline import resources_keyboard, yes_no
@@ -9,7 +12,7 @@ from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import AddResource
-from utils.tools import keywords_list
+from utils.tools import keywords_list, search_resources
 
 router = Router()
 
@@ -18,6 +21,52 @@ async def resources(message: Message):
     lang = await db.lang(message.from_user.id)
     await message.answer(_("resources", lang),
                          reply_markup=resources_keyboard(lang))
+
+
+@router.inline_query()
+async def search(query: InlineQuery, bot: Bot):
+    results = await search_resources(query.query)
+    articles = []
+
+    thumbnail = {
+        "document": "https://emoji.aranja.com/emojis/apple/1f4c4.png",
+        "video": "https://emoji.aranja.com/emojis/apple/1f4f9.png",
+        "photo": "https://emoji.aranja.com/emojis/apple/1f5bc-fe0f.png",
+    }
+
+    for result in results:
+        link = await create_start_link(bot, result['resource_id'])
+        articles.append(InlineQueryResultArticle(
+            id=str(result['resource_id']),
+            title=result['title'],
+            description=result['description'],
+            input_message_content=InputTextMessageContent(
+                message_text=f"<a href=\"{link}\">{result['title']}</a>",
+            ),
+            thumbnail_url=thumbnail[result['content_type']],
+        ))
+
+    await query.answer(articles, cache_time=1)
+
+
+@router.message(CommandStart(deep_link=True))
+async def send_resource(message: Message, command: CommandObject):
+    lang = await db.lang(message.from_user.id)
+    payload = command.args
+
+    if payload.isdigit():
+        resource = await db.resources(int(payload))
+        if resource:
+            if resource['content_type'] == 'document':
+                await message.answer_document(resource['file_id'], caption=resource['description'])
+            elif resource['content_type'] == 'video':
+                await message.answer_video(resource['file_id'], caption=resource['description'])
+            elif resource['content_type'] == 'photo':
+                await message.answer_photo(resource['file_id'], caption=resource['description'])
+        else:
+            await message.answer(_("resource_not_found", lang))
+    else:
+        await message.answer(_("resource_not_found", lang))
 
 
 @router.callback_query(F.data == "resources_add")

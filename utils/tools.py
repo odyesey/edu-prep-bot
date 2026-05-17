@@ -1,5 +1,8 @@
 import re
 
+from asyncpg.protocol.record import Record
+
+from database import db
 from utils.gettext import _
 
 def validate_answers(answers: str) -> tuple[list, list]:
@@ -37,3 +40,28 @@ def keywords_list(keywords: str, lang: str) -> tuple[int, list[str]]:
         return 0, errors
 
     return 1, keywords
+
+def in_list(target: str, words: list[str]) -> bool:
+    for word in words:
+        if target.lower() == word.lower():
+            return True
+    return False
+
+async def search_resources(query: str) -> list[Record]:
+    matches = []
+    queries = query.split()
+
+    records = await db.resources()
+
+    for record in records:
+        keywords = record['keywords'] + record['title'].split() + record['description'].split()
+
+        flag = True
+        for keyword in queries:
+            if not in_list(keyword, keywords):
+                flag = False
+                break
+
+        if flag: matches.append(record)
+
+    return matches[:20]

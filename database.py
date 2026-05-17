@@ -97,6 +97,14 @@ class Database(Postgres):
                            content_type, description,
                            keywords, execute=True)
 
+    async def resources(self, resource_id: int | None = None) -> list[Record]:
+        if resource_id:
+            sql = "SELECT * FROM resources WHERE resource_id = $1"
+            return await self.execute(sql, resource_id, fetch_row=True)
+
+        sql = "SELECT * FROM resources"
+        return await self.execute(sql, fetch=True)
+
     async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"
         await self.execute(sql, user_id, lang, execute=True)

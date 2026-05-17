@@ -75,6 +75,7 @@ resource_keywords_limit: "Kalit so'zlar o'ntadan oshib ketdi"
 resource_keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
 resource_keywords_error: "Kalit so'zlarda xatoliklar topildi:"
 resource_added: "✅ Resurs muvaffaqiyatli qo'shildi"
+resource_not_found: "Resurs topilmadi"
 description_limit: |
   Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
   Siz yuborgan matn uzunligi: {desc_len}
