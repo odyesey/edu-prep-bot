@@ -29,6 +29,17 @@ def resources_keyboard(lang: str) -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text=_("add_resource", lang), callback_data="resources_add")],
     ])
 
+def save_resource(lang: str, resource_id: int, delete: bool = False) -> InlineKeyboardMarkup:
+    mode = 0
+    text = _("resource_save", lang)
+    if delete:
+        mode = 1
+        text = _("resource_delete", lang)
+
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=text, callback_data=f"save_{mode}_{resource_id}")],
+    ])
+
 def verify_button(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=_("start_verify", lang), callback_data="verify")]

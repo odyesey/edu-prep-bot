@@ -105,6 +105,26 @@ class Database(Postgres):
         sql = "SELECT * FROM resources"
         return await self.execute(sql, fetch=True)
 
+    async def save_resource(self, user_id: int, resource_id: int, delete: bool = False):
+        if delete:
+            sql = "UPDATE users SET saved_resources = array_remove(saved_resources, $2) WHERE user_id = $1"
+            return await self.execute(sql, user_id, resource_id, execute=True)
+
+        sql = """UPDATE users
+SET saved_resources = array_append(
+    COALESCE(saved_resources, '{}'),
+    $2
+)
+WHERE user_id = $1
+AND NOT ($2 = ANY(COALESCE(saved_resources, '{}')))"""
+        return await self.execute(sql, user_id, resource_id, execute=True)
+
+    async def check_resource(self, user_id: int, resource_id: int) -> bool:
+        sql = "SELECT * FROM users WHERE user_id = $1 AND $2 = ANY(saved_resources)"
+        result = await self.execute(sql, user_id, resource_id, fetch_val=True)
+
+        return bool(result)
+
     async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"
         await self.execute(sql, user_id, lang, execute=True)
