@@ -7,7 +7,7 @@ from aiogram.types import (Message, CallbackQuery,
 from aiogram.utils.deep_linking import create_start_link
 
 from database import db
-from keyboards.inline import resources_keyboard, yes_no
+from keyboards.inline import resources_keyboard, save_resource, yes_no
 from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
@@ -25,9 +25,10 @@ async def resources(message: Message):
 
 @router.inline_query()
 async def search(query: InlineQuery, bot: Bot):
+    user_id = query.from_user.id
+    lang = await db.lang(user_id)
     results = await search_resources(query.query)
     articles = []
-
     thumbnail = {
         "document": "https://emoji.aranja.com/emojis/apple/1f4c4.png",
         "video": "https://emoji.aranja.com/emojis/apple/1f4f9.png",
@@ -36,6 +37,7 @@ async def search(query: InlineQuery, bot: Bot):
 
     for result in results:
         link = await create_start_link(bot, result['resource_id'])
+        delete = await db.check_resource(user_id, result['resource_id'])
         articles.append(InlineQueryResultArticle(
             id=str(result['resource_id']),
             title=result['title'],
@@ -43,6 +45,7 @@ async def search(query: InlineQuery, bot: Bot):
             input_message_content=InputTextMessageContent(
                 message_text=f"<a href=\"{link}\">{result['title']}</a>",
             ),
+            reply_markup=save_resource(lang, result['resource_id'], delete),
             thumbnail_url=thumbnail[result['content_type']],
         ))
 
@@ -67,6 +70,23 @@ async def send_resource(message: Message, command: CommandObject):
             await message.answer(_("resource_not_found", lang))
     else:
         await message.answer(_("resource_not_found", lang))
+
+
+@router.callback_query(F.data.startswith("save"))
+async def save_callback(callback: CallbackQuery, bot: Bot):
+    user_id = callback.from_user.id
+    lang = await db.lang(user_id)
+    data = callback.data.split("_")
+    mode = bool(int(data[1]))
+    resource_id = int(data[2])
+
+    await db.save_resource(user_id, resource_id, mode)
+    await bot.edit_message_reply_markup(inline_message_id=callback.inline_message_id,
+                                        reply_markup=save_resource(lang, resource_id, not mode))
+    if mode:
+        await callback.answer(_("deleted", lang))
+    else:
+        await callback.answer(_("saved", lang))
 
 
 @router.callback_query(F.data == "resources_add")

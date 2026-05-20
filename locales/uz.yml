@@ -76,6 +76,8 @@ resource_keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
 resource_keywords_error: "Kalit so'zlarda xatoliklar topildi:"
 resource_added: "✅ Resurs muvaffaqiyatli qo'shildi"
 resource_not_found: "Resurs topilmadi"
+resource_save: "⭐ Saqlash"
+resource_delete: "🗑️ O'chirish"
 description_limit: |
   Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
   Siz yuborgan matn uzunligi: {desc_len}
@@ -94,5 +96,7 @@ previous_results: "📄 Oldingi natijalar"
 send_channel: "📢 Kanal yuborish"
 yes_: "✅ Ha"
 no_: "❌ Yo'q"
+saved: "Saqlandi"
+deleted: "O'chirildi"
 cancel: "🚫 Bekor qilish"
 back: "🔙 Ortga qaytish"
