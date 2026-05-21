@@ -17,10 +17,15 @@ from utils.tools import keywords_list, search_resources
 router = Router()
 
 @router.message(Text("resources"))
-async def resources(message: Message):
+async def resources(message: Message, bot: Bot):
     lang = await db.lang(message.from_user.id)
-    await message.answer(_("resources", lang),
-                         reply_markup=resources_keyboard(lang))
+    popular_resources = await db.popular_resources()
+    msg = f"<b>{_("popular_resources", lang)}</b>"
+    for resource in popular_resources:
+        link = await create_start_link(bot, resource['resource_id'])
+        msg += f"\n<a href=\"{link}\">{resource['title']}</a> [⭐ {resource['saves']}]"
+
+    await message.answer(msg, reply_markup=resources_keyboard(lang))
 
 
 @router.inline_query()
@@ -54,18 +59,25 @@ async def search(query: InlineQuery, bot: Bot):
 
 @router.message(CommandStart(deep_link=True))
 async def send_resource(message: Message, command: CommandObject):
-    lang = await db.lang(message.from_user.id)
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
     payload = command.args
 
     if payload.isdigit():
         resource = await db.resources(int(payload))
         if resource:
+            delete = await db.check_resource(user_id, resource['resource_id'])
+            kwargs = {
+                "caption": resource['description'],
+                "reply_markup": save_resource(lang, resource['resource_id'], delete)
+            }
+
             if resource['content_type'] == 'document':
-                await message.answer_document(resource['file_id'], caption=resource['description'])
+                await message.answer_document(resource['file_id'], **kwargs)
             elif resource['content_type'] == 'video':
-                await message.answer_video(resource['file_id'], caption=resource['description'])
+                await message.answer_video(resource['file_id'], **kwargs)
             elif resource['content_type'] == 'photo':
-                await message.answer_photo(resource['file_id'], caption=resource['description'])
+                await message.answer_photo(resource['file_id'], **kwargs)
         else:
             await message.answer(_("resource_not_found", lang))
     else:
@@ -80,9 +92,17 @@ async def save_callback(callback: CallbackQuery, bot: Bot):
     mode = bool(int(data[1]))
     resource_id = int(data[2])
 
+    if mode and await db.check_resource(user_id, resource_id):
+        await db.add_resource_saves(resource_id, mode)
+    elif not mode and not await db.check_resource(user_id, resource_id):
+        await db.add_resource_saves(resource_id, mode)
+
     await db.save_resource(user_id, resource_id, mode)
-    await bot.edit_message_reply_markup(inline_message_id=callback.inline_message_id,
-                                        reply_markup=save_resource(lang, resource_id, not mode))
+    if callback.message:
+        await callback.message.edit_reply_markup(reply_markup=save_resource(lang, resource_id, not mode))
+    else:
+        await bot.edit_message_reply_markup(inline_message_id=callback.inline_message_id,
+                                            reply_markup=save_resource(lang, resource_id, not mode))
     if mode:
         await callback.answer(_("deleted", lang))
     else:

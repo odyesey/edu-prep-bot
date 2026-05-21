@@ -74,7 +74,7 @@ class Database(Postgres):
                            answers, execute=True)
 
     async def leaderboard(self) -> list[Record]:
-        sql = "SELECT name, rating FROM users ORDER BY RATING DESC LIMIT 20"
+        sql = "SELECT name, rating FROM users ORDER BY rating DESC LIMIT 20"
         return await self.execute(sql, fetch=True)
 
     async def get_rating(self, user_id: int) -> int:
@@ -97,6 +97,10 @@ class Database(Postgres):
                            content_type, description,
                            keywords, execute=True)
 
+    async def popular_resources(self) -> list[Record]:
+        sql = "SELECT * FROM resources ORDER BY saves DESC LIMIT 20"
+        return await self.execute(sql, fetch=True)
+
     async def resources(self, resource_id: int | None = None) -> list[Record]:
         if resource_id:
             sql = "SELECT * FROM resources WHERE resource_id = $1"
@@ -106,18 +110,23 @@ class Database(Postgres):
         return await self.execute(sql, fetch=True)
 
     async def save_resource(self, user_id: int, resource_id: int, delete: bool = False):
+        sql = """UPDATE users
+                 SET saved_resources = array_append(
+                     COALESCE(saved_resources, '{}'),
+                     $2
+                     )
+                     WHERE user_id = $1
+                     AND NOT ($2 = ANY(COALESCE(saved_resources, '{}')))"""
+
         if delete:
             sql = "UPDATE users SET saved_resources = array_remove(saved_resources, $2) WHERE user_id = $1"
-            return await self.execute(sql, user_id, resource_id, execute=True)
-
-        sql = """UPDATE users
-SET saved_resources = array_append(
-    COALESCE(saved_resources, '{}'),
-    $2
-)
-WHERE user_id = $1
-AND NOT ($2 = ANY(COALESCE(saved_resources, '{}')))"""
         return await self.execute(sql, user_id, resource_id, execute=True)
+
+    async def add_resource_saves(self, resource_id: int, subtract: bool = False):
+        sql = "UPDATE resources SET saves = saves + 1 WHERE resource_id = $1"
+        if subtract:
+            sql = "UPDATE resources SET saves = saves - 1 WHERE resource_id = $1"
+        await self.execute(sql, resource_id, execute=True)
 
     async def check_resource(self, user_id: int, resource_id: int) -> bool:
         sql = "SELECT * FROM users WHERE user_id = $1 AND $2 = ANY(saved_resources)"

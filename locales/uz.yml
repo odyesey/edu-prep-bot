@@ -58,6 +58,7 @@ profile_info: |
   {verified}
 verified_user: "Tasdiqlangan"
 not_verified_user: "Tasdiqlanmagan"
+popular_resources: "Ommabop resurslar"
 resource_title: "Resurs nomini kiriting"
 resource_file: "Yagona resurs faylini yuboring (fayl, video, rasm)"
 resource_use_caption: "Resursga yozilgan izohni resurs uchun ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
