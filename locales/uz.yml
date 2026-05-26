@@ -60,6 +60,9 @@ verified_user: "Tasdiqlangan"
 not_verified_user: "Tasdiqlanmagan"
 popular_resources: "Ommabop resurslar"
 resource_title: "Resurs nomini kiriting"
+resource_title_limit: |
+  Resurs nomi 50 ta belgidan oshishi mumkin emas
+  Siz yuborgan matn uzunligi: {title_len}
 resource_file: "Yagona resurs faylini yuboring (fayl, video, rasm)"
 resource_use_caption: "Resursga yozilgan izohni resurs uchun ma'lumot ko'rinishida qo'llashni hohlaysizmi?"
 resource_caption_limit: >
@@ -83,6 +86,7 @@ description_limit: |
   Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
   Siz yuborgan matn uzunligi: {desc_len}
 invalid_format: "Noto'g'ri format"
+page_no: "Sahifa: {page}"
 canceled: "Bekor qilindi"
 tests: "📝 Testlar"
 resources: "🗂 O'quv resurslari"
@@ -92,6 +96,7 @@ profile: "👤 Profil"
 change_lang: "🌐 Tilni o'zgartirish"
 host_test: "➕ Test o'tkazish"
 add_resource: "➕ Resurs qo'shish"
+saved_resources: "⭐ Saqlanganlar"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
 send_channel: "📢 Kanal yuborish"
@@ -99,5 +104,7 @@ yes_: "✅ Ha"
 no_: "❌ Yo'q"
 saved: "Saqlandi"
 deleted: "O'chirildi"
+prev: "⬅️ Oldingisi"
+next: "➡️ Keyingisi"
 cancel: "🚫 Bekor qilish"
 back: "🔙 Ortga qaytish"

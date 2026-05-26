@@ -7,24 +7,21 @@ from aiogram.types import (Message, CallbackQuery,
 from aiogram.utils.deep_linking import create_start_link
 
 from database import db
-from keyboards.inline import resources_keyboard, save_resource, yes_no
+from keyboards.inline import pagination, resources_keyboard, save_resource, yes_no
 from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import AddResource
-from utils.tools import keywords_list, search_resources
+from utils.tools import generate_resources, keywords_list, search_resources
 
 router = Router()
 
 @router.message(Text("resources"))
-async def resources(message: Message, bot: Bot):
+async def resources_handler(message: Message, bot: Bot):
     lang = await db.lang(message.from_user.id)
     popular_resources = await db.popular_resources()
-    msg = f"<b>{_("popular_resources", lang)}</b>"
-    for resource in popular_resources:
-        link = await create_start_link(bot, resource['resource_id'])
-        msg += f"\n<a href=\"{link}\">{resource['title']}</a> [⭐ {resource['saves']}]"
-
+    msg = f"<b>{_("popular_resources", lang)}</b>\n"
+    msg += await generate_resources(bot, popular_resources)
     await message.answer(msg, reply_markup=resources_keyboard(lang))
 
 
@@ -125,9 +122,14 @@ async def title(message: Message, state: FSMContext):
     user_id = message.from_user.id
     lang = await db.lang(user_id)
 
-    await state.update_data(title=message.text)
-    await state.set_state(AddResource.file)
-    await message.answer(_("resource_file", lang))
+    if len(message.text) <= 50:
+        await state.update_data(title=message.text)
+        await state.set_state(AddResource.file)
+        await message.answer(_("resource_file", lang))
+    else:
+        await message.answer(_("resource_title_limit", lang).format(
+            title_len=len(message.text)
+        ))
 
 
 @router.message(AddResource.file, (F.document | F.video | F.photo))
@@ -216,3 +218,30 @@ async def invalid_format(message: Message):
     lang = await db.lang(user_id)
 
     await message.answer(_("invalid_format", lang))
+
+
+@router.callback_query(F.data.startswith("resource_saves"))
+async def saved_resources(callback: CallbackQuery, bot: Bot):
+    user_id = callback.from_user.id
+    lang = await db.lang(user_id)
+    saved = await db.saved_resources(user_id)
+    page = max(int(callback.data.split("_")[2]), 1)
+    pages = len(saved) // 10 + 1 if len(saved) % 10 else len(saved) // 10
+    if page > pages: page = pages
+    resources = []
+
+    msg = _("page_no", lang).format(page=page) + "\n"
+    for resource_id in saved[page * 10 - 10 : page * 10]:
+        resources.append(await db.resources(resource_id))
+    msg += await generate_resources(bot, resources, with_saves=False)
+
+    await callback.message.edit_text(msg, reply_markup=pagination(lang, page, pages, "resource_saves_"))
+
+
+@router.callback_query(F.data == "resources")
+async def resources_callback(callback: CallbackQuery, bot: Bot):
+    lang = await db.lang(callback.from_user.id)
+    popular_resources = await db.popular_resources()
+    msg = f"<b>{_("popular_resources", lang)}</b>\n"
+    msg += await generate_resources(bot, popular_resources)
+    await callback.message.edit_text(msg, reply_markup=resources_keyboard(lang))

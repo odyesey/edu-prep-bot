@@ -1,5 +1,7 @@
 import re
 
+from aiogram import Bot
+from aiogram.utils.deep_linking import create_start_link
 from asyncpg.protocol.record import Record
 
 from database import db
@@ -65,3 +67,16 @@ async def search_resources(query: str) -> list[Record]:
         if flag: matches.append(record)
 
     return matches[:20]
+
+async def generate_resources(bot: Bot, resources: list[Record], with_saves: bool = True) -> str:
+    msg = ""
+    for resource in resources:
+        link = await create_start_link(bot, resource['resource_id'])
+        msg += f"<a href=\"{link}\">{resource['title']}</a>"
+
+        if with_saves:
+            msg += f" [⭐ {resource['saves']}]"
+
+        msg += "\n"
+
+    return msg

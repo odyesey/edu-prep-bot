@@ -5,13 +5,13 @@ from aiogram.types import Message, CallbackQuery
 
 from database import db
 from keyboards.inline import auto_detected_lang, lang_menu
-from keyboards.reply import start_keyboard, tests_keyboard
-from utils.filters import Text
+from keyboards.reply import start_keyboard
+from utils.filters import DeepLink, Text
 from utils.gettext import locales, _
 
 router = Router()
 
-@router.message(CommandStart())
+@router.message(CommandStart(), DeepLink())
 async def start(message: Message):
     user_id = message.from_user.id
 

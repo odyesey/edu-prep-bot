@@ -101,6 +101,10 @@ class Database(Postgres):
         sql = "SELECT * FROM resources ORDER BY saves DESC LIMIT 20"
         return await self.execute(sql, fetch=True)
 
+    async def saved_resources(self, user_id: int) -> list[Record]:
+        sql = f"SELECT saved_resources FROM users WHERE user_id = $1"
+        return await self.execute(sql, user_id, fetch_val=True)
+
     async def resources(self, resource_id: int | None = None) -> list[Record]:
         if resource_id:
             sql = "SELECT * FROM resources WHERE resource_id = $1"
