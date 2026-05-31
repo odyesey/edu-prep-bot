@@ -15,6 +15,13 @@ def tests_keyboard(lang: str) -> ReplyKeyboardMarkup:
         [KeyboardButton(text=_("previous_results", lang)), KeyboardButton(text=_("back", lang))]
     ], resize_keyboard=True)
 
+def vocabulary_keyboard(lang: str) -> ReplyKeyboardMarkup:
+    return ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text=_("vocabulary_add", lang)), KeyboardButton(text=_("vocabulary_continue", lang))],
+        [KeyboardButton(text=_("saved_btn", lang)), KeyboardButton(text=_("search", lang))],
+        [KeyboardButton(text=_("back", lang))]
+    ], resize_keyboard=True)
+
 def channels_list(lang: str) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text=_("send_channel", lang), request_chat=KeyboardButtonRequestChat(

@@ -1,7 +1,7 @@
 from handlers import (commands, leaderboard,
                       profile, change_lang,
                       verify, tests,
-                      resources)
+                      resources, vocabulary)
 
 routers_list = [
     commands.router,
@@ -11,4 +11,5 @@ routers_list = [
     change_lang.router,
     verify.router,
     resources.router,
+    vocabulary.router,
 ]

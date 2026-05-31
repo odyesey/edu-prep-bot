@@ -1,4 +1,5 @@
 import asyncpg
+import json
 
 from asyncpg import Connection
 from asyncpg.pool import Pool
@@ -137,6 +138,17 @@ class Database(Postgres):
         result = await self.execute(sql, user_id, resource_id, fetch_val=True)
 
         return bool(result)
+
+    async def add_vocabulary(self,
+                             user_id: int,
+                             title: str,
+                             words: dict,
+                             keywords: list[str]
+                             ):
+        sql = ("INSERT INTO vocabulary"
+               "(user_id, title, words, keywords) "
+               "VALUES ($1, $2, $3, $4)")
+        await self.execute(sql, user_id, title, json.dumps(words), keywords, execute=True)
 
     async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"

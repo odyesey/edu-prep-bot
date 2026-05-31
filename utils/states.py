@@ -17,3 +17,8 @@ class AddResource(StatesGroup):
     file = State()
     description = State()
     keywords = State()
+
+class AddVocabulary(StatesGroup):
+    title = State()
+    words = State()
+    keywords = State()

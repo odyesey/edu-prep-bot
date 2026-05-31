@@ -29,10 +29,10 @@ def keywords_list(keywords: str, lang: str) -> tuple[int, list[str]]:
     pattern = re.compile(r"^[A-Za-z0-9_'-]+$")
 
     if len(keywords) > 10:
-        errors.append(_("resource_keywords_limit", lang))
+        errors.append(_("keywords_limit", lang))
 
     if len(set(keywords)) != len(keywords):
-        errors.append(_("resource_keywords_duplicate", lang))
+        errors.append(_("keywords_duplicate", lang))
 
     for keyword in keywords:
         if not pattern.fullmatch(keyword):
@@ -80,3 +80,34 @@ async def generate_resources(bot: Bot, resources: list[Record], with_saves: bool
         msg += "\n"
 
     return msg
+
+def generate_vocab(text: str) -> dict | list:
+    text = text.split("\n")
+    result = dict()
+    fails = []
+
+    sep = "-"
+    hashtag_found = False
+
+    for num, word in enumerate(text, start=1):
+        if word.count(sep) != 1:
+            fails.append(word)
+            continue
+
+        if "#" in word:
+            fails.append(word)
+            hashtag_found = True
+            continue
+
+        if not bool(word.split(sep)[0].strip()) or not bool(word.split(sep)[1].strip()):
+            fails.append(word)
+            continue
+
+        valid_word = word.split(sep)
+        result[f"{valid_word[0].strip()}#{num}"] = valid_word[1].strip()
+
+    if hashtag_found: fails.insert(0, 1)
+
+    if fails:
+        return fails
+    return result

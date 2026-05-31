@@ -27,7 +27,7 @@ def yes_no(lang: str, prefix: str) -> InlineKeyboardMarkup:
 def resources_keyboard(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=_("add_resource", lang), callback_data="resources_add")],
-        [InlineKeyboardButton(text=_("saved_resources", lang), callback_data="resource_saves_1")],
+        [InlineKeyboardButton(text=_("saved_btn", lang), callback_data="resource_saves_1")],
     ])
 
 def pagination(lang: str, page: int, max_pages: int, prefix: str) -> InlineKeyboardMarkup:

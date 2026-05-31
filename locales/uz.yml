@@ -71,20 +71,33 @@ resource_caption_limit: >
 resource_description: >
   Resurs haqida ma'lumot yuboring.
   Bu boshqa foydalanuvchilarga resurs nima haqida ekanligini bilishga yordam beradi
-resource_keywords: |
-  O'ntagacha bo'lgan kalit so'zlarni vergul bilan ajratgan holda yuboring
-  Ular boshqa foydalanuvchilarga qidiruvni osonlashtiradi
-  Namuna: sat, math, practice
-resource_keywords_limit: "Kalit so'zlar o'ntadan oshib ketdi"
-resource_keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
-resource_keywords_error: "Kalit so'zlarda xatoliklar topildi:"
 resource_added: "✅ Resurs muvaffaqiyatli qo'shildi"
 resource_not_found: "Resurs topilmadi"
 resource_save: "⭐ Saqlash"
 resource_delete: "🗑️ O'chirish"
+popular_vocabularies: "Ommabop lug'atlar"
+vocabulary_title: "Lug'at nomini kiriting"
+vocabulary_title_limit: |
+  Lug'at nomi 50 ta belgidan oshishi mumkin emas
+  Siz yuborgan matn uzunligi: {title_len}
+vocabulary_words: |
+  So'zlar va ularning tarjimasini yuboring
+  Namuna:
+  salom - hello
+  hayr - goodbye
+vocabulary_words_error: "Quyidagi qatorlarda xatolik aniqlandi"
+vocabulary_hashtag_detected: "# belgisini ishlatish mumkin emas"
+vocabulary_added: "✅ Lug'at muvaffaqiyatli qo'shildi"
 description_limit: |
-  Telegram cheklovlari tufayli matn 1024 ta belgidan oshishi mumkin emas
+  Matn 1024 ta belgidan oshishi mumkin emas
   Siz yuborgan matn uzunligi: {desc_len}
+keywords: |
+  O'ntagacha bo'lgan kalit so'zlarni vergul bilan ajratgan holda yuboring
+  Ular boshqa foydalanuvchilarga qidiruvni osonlashtiradi
+  Namuna: sat, english, practice
+keywords_limit: "Kalit so'zlar o'ntadan oshib ketdi"
+keywords_duplicate: "Takrorlangan kalit so'zlar aniqlandi"
+keywords_error: "Kalit so'zlarda xatoliklar topildi:"
 invalid_format: "Noto'g'ri format"
 page_no: "Sahifa: {page}"
 canceled: "Bekor qilindi"
@@ -96,14 +109,17 @@ profile: "👤 Profil"
 change_lang: "🌐 Tilni o'zgartirish"
 host_test: "➕ Test o'tkazish"
 add_resource: "➕ Resurs qo'shish"
-saved_resources: "⭐ Saqlanganlar"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
+vocabulary_add: "➕ Lug'at qo'shish"
+vocabulary_continue: "➡️ Davom etish"
 send_channel: "📢 Kanal yuborish"
 yes_: "✅ Ha"
 no_: "❌ Yo'q"
 saved: "Saqlandi"
 deleted: "O'chirildi"
+saved_btn: "⭐ Saqlanganlar"
+search: "🔍 Qidirish"
 prev: "⬅️ Oldingisi"
 next: "➡️ Keyingisi"
 cancel: "🚫 Bekor qilish"

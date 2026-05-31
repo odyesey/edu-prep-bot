@@ -164,7 +164,7 @@ async def description(message: Message, state: FSMContext):
     if desc_len <= 1024:
         await state.update_data(description=message.text)
         await state.set_state(AddResource.keywords)
-        await message.answer(_("resource_keywords", lang))
+        await message.answer(_("keywords", lang))
     else:
         await message.answer(_("description_limit", lang).format(
             desc_len=desc_len
@@ -180,7 +180,7 @@ async def handle_callback(callback: CallbackQuery, state: FSMContext):
 
     if decision == "yes":
         await state.set_state(AddResource.keywords)
-        await callback.message.answer(_("resource_keywords", lang))
+        await callback.message.answer(_("keywords", lang))
     else:
         await callback.message.answer(_("resource_description", lang))
 
@@ -206,7 +206,7 @@ async def check_keywords(message: Message, state: FSMContext):
         await message.answer(_("resource_added", lang),
                              reply_markup=start_keyboard(lang))
     else:
-        error_msg = _("resource_keywords_error", lang) + "\n"
+        error_msg = _("keywords_error", lang) + "\n"
         error_msg += "\n".join(keywords)
         await message.answer(error_msg)
 
