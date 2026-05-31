@@ -1,4 +1,4 @@
-from aiogram import Router, F
+from aiogram import Router, Bot, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -8,14 +8,17 @@ from keyboards.reply import cancel_button, vocabulary_keyboard
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import AddVocabulary
-from utils.tools import generate_vocab, keywords_list
+from utils.tools import generate_populars, generate_vocab, keywords_list
 
 router = Router()
 
 @router.message(Text("vocabulary"))
-async def vocabulary(message: Message):
+async def vocabulary(message: Message, bot: Bot):
     lang = await db.lang(message.from_user.id)
-    await message.answer("popular_vocabularies", reply_markup=vocabulary_keyboard(lang))
+    popular_vocabs = await db.popular_vocabs()
+    msg = _("popular_vocabularies", lang) + "\n"
+    msg += await generate_populars(bot, popular_vocabs, vocab_list=True)
+    await message.answer(msg, reply_markup=vocabulary_keyboard(lang))
 
 
 @router.message(Text("vocabulary_add"))
@@ -75,7 +78,7 @@ async def check_keywords(message: Message, state: FSMContext):
 
     if status_code:
         data = await state.get_data()
-        await db.add_vocabulary(
+        await db.add_vocab(
             user_id=user_id,
             title=data['title'],
             words=data['words'],

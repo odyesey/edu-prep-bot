@@ -68,10 +68,13 @@ async def search_resources(query: str) -> list[Record]:
 
     return matches[:20]
 
-async def generate_resources(bot: Bot, resources: list[Record], with_saves: bool = True) -> str:
+async def generate_populars(bot: Bot, resources: list[Record], with_saves: bool = True, vocab_list: bool = False) -> str:
     msg = ""
+    id_name = "vocabulary_id" if vocab_list else "resource_id"
+    prefix = "v" if vocab_list else ""
+
     for resource in resources:
-        link = await create_start_link(bot, resource['resource_id'])
+        link = await create_start_link(bot, prefix + str(resource[id_name]))
         msg += f"<a href=\"{link}\">{resource['title']}</a>"
 
         if with_saves:

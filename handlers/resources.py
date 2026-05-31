@@ -12,7 +12,7 @@ from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import AddResource
-from utils.tools import generate_resources, keywords_list, search_resources
+from utils.tools import generate_populars, keywords_list, search_resources
 
 router = Router()
 
@@ -21,7 +21,7 @@ async def resources_handler(message: Message, bot: Bot):
     lang = await db.lang(message.from_user.id)
     popular_resources = await db.popular_resources()
     msg = f"<b>{_("popular_resources", lang)}</b>\n"
-    msg += await generate_resources(bot, popular_resources)
+    msg += await generate_populars(bot, popular_resources)
     await message.answer(msg, reply_markup=resources_keyboard(lang))
 
 
@@ -233,7 +233,7 @@ async def saved_resources(callback: CallbackQuery, bot: Bot):
     msg = _("page_no", lang).format(page=page) + "\n"
     for resource_id in saved[page * 10 - 10 : page * 10]:
         resources.append(await db.resources(resource_id))
-    msg += await generate_resources(bot, resources, with_saves=False)
+    msg += await generate_populars(bot, resources, with_saves=False)
 
     await callback.message.edit_text(msg, reply_markup=pagination(lang, page, pages, "resource_saves_"))
 
@@ -243,5 +243,5 @@ async def resources_callback(callback: CallbackQuery, bot: Bot):
     lang = await db.lang(callback.from_user.id)
     popular_resources = await db.popular_resources()
     msg = f"<b>{_("popular_resources", lang)}</b>\n"
-    msg += await generate_resources(bot, popular_resources)
+    msg += await generate_populars(bot, popular_resources)
     await callback.message.edit_text(msg, reply_markup=resources_keyboard(lang))

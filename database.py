@@ -139,7 +139,7 @@ class Database(Postgres):
 
         return bool(result)
 
-    async def add_vocabulary(self,
+    async def add_vocab(self,
                              user_id: int,
                              title: str,
                              words: dict,
@@ -149,6 +149,10 @@ class Database(Postgres):
                "(user_id, title, words, keywords) "
                "VALUES ($1, $2, $3, $4)")
         await self.execute(sql, user_id, title, json.dumps(words), keywords, execute=True)
+
+    async def popular_vocabs(self) -> list[Record]:
+        sql = "SELECT * FROM vocabulary ORDER BY saves DESC LIMIT 10"
+        return await self.execute(sql, fetch=True)
 
     async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"
