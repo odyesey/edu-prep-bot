@@ -99,7 +99,7 @@ class Database(Postgres):
                            keywords, execute=True)
 
     async def popular_resources(self) -> list[Record]:
-        sql = "SELECT * FROM resources ORDER BY saves DESC LIMIT 20"
+        sql = "SELECT * FROM resources ORDER BY saves DESC LIMIT 10"
         return await self.execute(sql, fetch=True)
 
     async def saved_resources(self, user_id: int) -> list[Record]:
