@@ -53,10 +53,13 @@ async def search_resources(query: str) -> list[Record]:
     matches = []
     queries = query.split()
 
-    records = await db.resources()
+    resources = await db.resources()
+    vocabs = await db.resources(vocab=True)
 
-    for record in records:
-        keywords = record['keywords'] + record['title'].split() + record['description'].split()
+    for record in resources + vocabs:
+        keywords = record['keywords'] + record['title'].split()
+        if record.get("description"):
+            keywords += record['description'].split()
 
         flag = True
         for keyword in queries:

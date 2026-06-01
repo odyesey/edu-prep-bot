@@ -106,15 +106,17 @@ class Database(Postgres):
         sql = f"SELECT saved_resources FROM users WHERE user_id = $1"
         return await self.execute(sql, user_id, fetch_val=True)
 
-    async def resources(self, resource_id: int | None = None) -> list[Record]:
+    async def resources(self, resource_id: int | None = None, vocab: bool = False) -> list[Record]:
+        table = "vocabulary " if vocab else "resources"
+
         if resource_id:
-            sql = "SELECT * FROM resources WHERE resource_id = $1"
+            sql = f"SELECT * FROM {table} WHERE resource_id = $1"
             return await self.execute(sql, resource_id, fetch_row=True)
 
-        sql = "SELECT * FROM resources"
+        sql = f"SELECT * FROM {table}"
         return await self.execute(sql, fetch=True)
 
-    async def save_resource(self, user_id: int, resource_id: int, delete: bool = False):
+    async def save_resource(self, user_id: int, resource_id: str, delete: bool = False):
         sql = """UPDATE users
                  SET saved_resources = array_append(
                      COALESCE(saved_resources, '{}'),
@@ -133,7 +135,7 @@ class Database(Postgres):
             sql = "UPDATE resources SET saves = saves - 1 WHERE resource_id = $1"
         await self.execute(sql, resource_id, execute=True)
 
-    async def check_resource(self, user_id: int, resource_id: int) -> bool:
+    async def check_resource(self, user_id: int, resource_id: str) -> bool:
         sql = "SELECT * FROM users WHERE user_id = $1 AND $2 = ANY(saved_resources)"
         result = await self.execute(sql, user_id, resource_id, fetch_val=True)
 

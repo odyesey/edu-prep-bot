@@ -1,10 +1,7 @@
 from aiogram import Router, Bot, F
 from aiogram.filters import CommandStart, CommandObject, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import (Message, CallbackQuery,
-                           InlineQuery, InlineQueryResultArticle,
-                           InputTextMessageContent)
-from aiogram.utils.deep_linking import create_start_link
+from aiogram.types import Message, CallbackQuery
 
 from database import db
 from keyboards.inline import pagination, resources_keyboard, save_resource, yes_no
@@ -12,7 +9,7 @@ from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import Text
 from utils.gettext import _
 from utils.states import AddResource
-from utils.tools import generate_populars, keywords_list, search_resources
+from utils.tools import generate_populars, keywords_list
 
 router = Router()
 
@@ -23,35 +20,6 @@ async def resources_handler(message: Message, bot: Bot):
     msg = f"<b>{_("popular_resources", lang)}</b>\n"
     msg += await generate_populars(bot, popular_resources)
     await message.answer(msg, reply_markup=resources_keyboard(lang))
-
-
-@router.inline_query()
-async def search(query: InlineQuery, bot: Bot):
-    user_id = query.from_user.id
-    lang = await db.lang(user_id)
-    results = await search_resources(query.query)
-    articles = []
-    thumbnail = {
-        "document": "https://emoji.aranja.com/emojis/apple/1f4c4.png",
-        "video": "https://emoji.aranja.com/emojis/apple/1f4f9.png",
-        "photo": "https://emoji.aranja.com/emojis/apple/1f5bc-fe0f.png",
-    }
-
-    for result in results:
-        link = await create_start_link(bot, result['resource_id'])
-        delete = await db.check_resource(user_id, result['resource_id'])
-        articles.append(InlineQueryResultArticle(
-            id=str(result['resource_id']),
-            title=result['title'],
-            description=result['description'],
-            input_message_content=InputTextMessageContent(
-                message_text=f"<a href=\"{link}\">{result['title']}</a>",
-            ),
-            reply_markup=save_resource(lang, result['resource_id'], delete),
-            thumbnail_url=thumbnail[result['content_type']],
-        ))
-
-    await query.answer(articles, cache_time=1)
 
 
 @router.message(CommandStart(deep_link=True))
