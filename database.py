@@ -10,7 +10,6 @@ from typing import Union
 
 from data.config import DB_USER, DB_PASS, DB_HOST, DB_NAME
 
-
 class Postgres:
     def __init__(self):
         self.pool: Union[Pool, None] = None
@@ -108,9 +107,11 @@ class Database(Postgres):
 
     async def resources(self, resource_id: int | None = None, vocab: bool = False) -> list[Record]:
         table = "vocabulary " if vocab else "resources"
+        column = "vocabulary_id" if vocab else "resource_id"
+        resource_id = abs(resource_id) if resource_id else None
 
         if resource_id:
-            sql = f"SELECT * FROM {table} WHERE resource_id = $1"
+            sql = f"SELECT * FROM {table} WHERE {column} = $1"
             return await self.execute(sql, resource_id, fetch_row=True)
 
         sql = f"SELECT * FROM {table}"
@@ -155,6 +156,31 @@ class Database(Postgres):
     async def popular_vocabs(self) -> list[Record]:
         sql = "SELECT * FROM vocabulary ORDER BY saves DESC LIMIT 10"
         return await self.execute(sql, fetch=True)
+
+    async def update_current_vocab(self, user_id: int, vocab_data: dict):
+        sql = "UPDATE users SET current_vocabulary = $2 WHERE user_id = $1"
+        await self.execute(sql, user_id, json.dumps(vocab_data), execute=True)
+
+    async def check_current_vocab(self, user_id: int, vocab_id: int) -> bool:
+        sql = "SELECT current_vocabulary FROM users WHERE user_id = $1"
+        result = json.loads(await self.execute(sql, user_id, fetch_val=True))
+
+        if not result or result['vocabulary_id'] != vocab_id:
+            return False
+        return True
+
+    async def current_vocab(self, user_id: int) -> dict:
+        sql = "SELECT current_vocabulary FROM users WHERE user_id = $1"
+        return json.loads(await self.execute(sql, user_id, fetch_val=True))
+
+    async def word(self, vocab_id: int, word_id: int) -> tuple | None:
+        sql = "SELECT words FROM vocabulary WHERE vocabulary_id = $1"
+        result = json.loads(await self.execute(sql, vocab_id, fetch_val=True))
+
+        for key, val in result.items():
+            if f"#{word_id}" in key:
+                return key.split("#")[0], val, int(key.split("#")[1])
+        return None
 
     async def change_lang(self, user_id: int, lang: str):
         sql = "UPDATE users SET lang = $2 WHERE user_id = $1"

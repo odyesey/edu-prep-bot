@@ -49,6 +49,29 @@ def save_resource(lang: str, resource_id: int, delete: bool = False) -> InlineKe
         [InlineKeyboardButton(text=text, callback_data=f"save_{mode}_{resource_id}")],
     ])
 
+def vocab_button(lang: str, vocab_id: int, continue_: bool) -> InlineKeyboardMarkup:
+    if continue_: text = _("continue", lang)
+    else: text = _("begin", lang)
+
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=text, callback_data=f"vocab_{vocab_id}")]
+    ])
+
+def vocab_learning_keyboard(lang: str, finished: bool = False):
+    buttons = []
+
+    text = _("incorrect", lang)
+    callback_data = "word_-1"
+    if finished:
+        text = _("restart", lang)
+        callback_data = "word_0"
+    else:
+        buttons.append(InlineKeyboardButton(text=_("correct", lang), callback_data="word_1"))
+
+    buttons.insert(0, InlineKeyboardButton(text=text, callback_data=callback_data))
+
+    return InlineKeyboardMarkup(inline_keyboard=[buttons])
+
 def verify_button(lang: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text=_("start_verify", lang), callback_data="verify")]

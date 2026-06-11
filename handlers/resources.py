@@ -6,7 +6,7 @@ from aiogram.types import Message, CallbackQuery
 from database import db
 from keyboards.inline import pagination, resources_keyboard, save_resource, yes_no
 from keyboards.reply import cancel_button, start_keyboard
-from utils.filters import Text
+from utils.filters import PositiveId, Text
 from utils.gettext import _
 from utils.states import AddResource
 from utils.tools import generate_populars, keywords_list
@@ -22,7 +22,7 @@ async def resources_handler(message: Message, bot: Bot):
     await message.answer(msg, reply_markup=resources_keyboard(lang))
 
 
-@router.message(CommandStart(deep_link=True))
+@router.message(CommandStart(deep_link=True), PositiveId())
 async def send_resource(message: Message, command: CommandObject):
     user_id = message.from_user.id
     lang = await db.lang(user_id)

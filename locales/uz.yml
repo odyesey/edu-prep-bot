@@ -88,6 +88,12 @@ vocabulary_words: |
 vocabulary_words_error: "Quyidagi qatorlarda xatolik aniqlandi"
 vocabulary_hashtag_detected: "# belgisini ishlatish mumkin emas"
 vocabulary_added: "✅ Lug'at muvaffaqiyatli qo'shildi"
+vocabulary_not_found: "Lug'at topilmadi"
+vocabulary_learn_finished: "Bu so'z aylanmasi tugadi"
+vocabulary_learn_completed: "🎉 Hamma so'zlarni yod oldingiz"
+vocabulary_reset_confirm: >
+  Agar yangi lug'at boshlasangiz, eski lug'at jarayoni o'chib ketadi.
+  Rostdan ham davom etmoqchimisiz?
 description_limit: |
   Matn 1024 ta belgidan oshishi mumkin emas
   Siz yuborgan matn uzunligi: {desc_len}
@@ -112,14 +118,18 @@ add_resource: "➕ Resurs qo'shish"
 join_test: "➡️ Testga qo'shilish"
 previous_results: "📄 Oldingi natijalar"
 vocabulary_add: "➕ Lug'at qo'shish"
-vocabulary_continue: "➡️ Davom etish"
 send_channel: "📢 Kanal yuborish"
 yes_: "✅ Ha"
 no_: "❌ Yo'q"
+correct: "✅ To'g'ri"
+incorrect: "❌ Noto'g'ri"
 saved: "Saqlandi"
 deleted: "O'chirildi"
 saved_btn: "⭐ Saqlanganlar"
 search: "🔍 Qidirish"
+begin: "▶️ Boshlash"
+continue: "➡️ Davom etish"
+restart: "🔄️ Qayta boshlash"
 prev: "⬅️ Oldingisi"
 next: "➡️ Keyingisi"
 cancel: "🚫 Bekor qilish"

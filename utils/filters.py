@@ -15,3 +15,10 @@ class Text(BaseFilter):
 class DeepLink(BaseFilter):
     async def __call__(self, message: Message, command: CommandObject) -> bool:
         return not command.args
+
+class PositiveId(BaseFilter):
+    async def __call__(self, message: Message, command: CommandObject) -> bool:
+        try:
+            return int(command.args) > 0
+        except ValueError:
+            return False
