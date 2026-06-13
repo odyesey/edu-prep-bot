@@ -6,8 +6,6 @@ from aiogram.filters import CommandStart, CommandObject, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
-from contextlib import suppress
-
 from database import db
 from keyboards.inline import vocab_button, vocab_learning_keyboard, yes_no
 from keyboards.reply import cancel_button, vocabulary_keyboard
@@ -54,14 +52,22 @@ async def process_callback(callback: CallbackQuery):
     vocab_id = int(callback.data.split("_")[1])
     current_vocab = await db.check_current_vocab(user_id, vocab_id)
     if current_vocab:
-        vocab_data = {
-            "vocabulary_id": vocab_id,
-            "reverse": False,
-            "last_word": 1,
-            "words": []
-        }
-        await db.update_current_vocab(user_id, vocab_data)
-        word = await db.word(vocab_id, 1)
+        vocab = await db.current_vocab(user_id)
+        words = json.loads((await db.resources(vocab['vocabulary_id'], vocab=True))['words'])
+
+
+        if len(vocab['words']) >= len(words):
+            return await callback.message.edit_text(_("vocabulary_learn_completed", lang),
+                                                    reply_markup=vocab_learning_keyboard(lang, finished=True))
+
+        for word_id in range(1, len(words) + 1):
+            if not word_id in vocab['words']:
+                break
+
+        vocab['last_word'] = word_id
+        await db.update_current_vocab(user_id, vocab)
+
+        word = await db.word(vocab['vocabulary_id'], word_id)
         await callback.message.edit_text(f"{word[0]}\n\n<tg-spoiler>{word[1]}</tg-spoiler>",
                                          reply_markup=vocab_learning_keyboard(lang))
     else:
@@ -218,3 +224,30 @@ async def check_keywords(message: Message, state: FSMContext):
 async def invalid_format(message: Message):
     lang = await db.lang(message.from_user.id)
     await message.answer(_("invalid_format", lang))
+
+
+@router.message(Text("continue"))
+async def continue_vocab(message: Message):
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+
+    vocab = await db.current_vocab(user_id)
+    if vocab:
+        words = json.loads((await db.resources(vocab['vocabulary_id'], vocab=True))['words'])
+
+        if len(vocab['words']) >= len(words):
+            return await message.answer(_("vocabulary_learn_completed", lang),
+                                        reply_markup=vocab_learning_keyboard(lang, finished=True))
+
+        for word_id in range(1, len(words) + 1):
+            if not word_id in vocab['words']:
+                break
+
+        vocab['last_word'] = word_id
+        await db.update_current_vocab(user_id, vocab)
+
+        word = await db.word(vocab['vocabulary_id'], word_id)
+        await message.answer(f"{word[0]}\n\n<tg-spoiler>{word[1]}</tg-spoiler>",
+                                         reply_markup=vocab_learning_keyboard(lang))
+    else:
+        await message.answer(_("vocabulary_not_found", lang))
