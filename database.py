@@ -101,9 +101,12 @@ class Database(Postgres):
         sql = "SELECT * FROM resources ORDER BY saves DESC LIMIT 10"
         return await self.execute(sql, fetch=True)
 
-    async def saved_resources(self, user_id: int) -> list[Record]:
+    async def saved_resources(self, user_id: int, vocab: bool = False) -> list[Record]:
         sql = f"SELECT saved_resources FROM users WHERE user_id = $1"
-        return await self.execute(sql, user_id, fetch_val=True)
+        result = await self.execute(sql, user_id, fetch_val=True)
+
+        return [id_ for id_ in result
+                if (not vocab and id_ > 0) or (vocab and id_ < 0)]
 
     async def resources(self, resource_id: int | None = None, vocab: bool = False) -> list[Record]:
         table = "vocabulary " if vocab else "resources"
