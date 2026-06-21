@@ -74,11 +74,11 @@ async def delete_ended_tests(bot: Bot):
 
                     prev_results = await db.results(user['user_id'])
                     if not prev_results: prev_results = []
+                    prev_results.append(f"{now.strftime("%d.%m.%Y")} {result.count(True)}/{len(result)}")
 
                     if len(prev_results) > 5:
                         prev_results.pop(0)
 
-                    prev_results.append(f"{now.strftime("%d.%m.%Y")} {result.count(True)}/{len(result)}")
                     await db.update_results(user['user_id'], prev_results)
 
                     for answer in range(len(result)):

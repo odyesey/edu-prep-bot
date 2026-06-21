@@ -306,3 +306,17 @@ async def refresh_test(callback: CallbackQuery):
     else:
         await callback.answer(_("test_late", lang))
 
+
+@router.message(Text("previous_results"))
+async def last_results(message: Message):
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+
+    msg = _("previous_results", lang) + "\n"
+    results = await db.results(user_id)
+
+    if results:
+        for result in range(len(results) - 1, -1, -1):
+            msg += results[result] + "\n"
+
+    await message.answer(msg)
