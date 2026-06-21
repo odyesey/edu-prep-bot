@@ -49,7 +49,18 @@ enter_test_answers: |
   3. 48
   4. 12.8
 invalid_test_answers: "Quyidagi javoblarda format xatoligi aniqlandi"
-test_added: "✅ Test muvaffaqiyatli qo'shildi"
+test_added: |
+  ✅ Test muvaffaqiyatli qo'shildi
+  Test kodi: {code}
+test_enter_code: "Test kodini kiriting"
+test_submit_answers: "⬆️ Javoblarni yuborish"
+test_answers_received: >
+  Javoblar qabul qilindi. Test oxirida natijalar yuboriladi.
+  Javoblarni test yakuniga qadar qayta yuborishingiz mumkin
+test_early: "Test hali boshlanmadi"
+test_late: "Test tugagan"
+test_found: "Test topildi"
+test_not_found: "Test topilmadi"
 profile_info: |
   Ism: {name}
   ID: {user_id}
@@ -128,6 +139,7 @@ deleted: "O'chirildi"
 saved_btn: "⭐ Saqlanganlar"
 begin: "▶️ Boshlash"
 continue: "➡️ Davom etish"
+refresh: "🔄️ Yangilash"
 restart: "🔄️ Qayta boshlash"
 prev: "⬅️ Oldingisi"
 next: "➡️ Keyingisi"

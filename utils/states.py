@@ -12,6 +12,10 @@ class HostTest(StatesGroup):
     duration = State()
     answers = State()
 
+class JoinTest(StatesGroup):
+    code = State()
+    submit = State()
+
 class AddResource(StatesGroup):
     title = State()
     file = State()

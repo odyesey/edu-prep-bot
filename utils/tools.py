@@ -4,6 +4,9 @@ from aiogram import Bot
 from aiogram.utils.deep_linking import create_start_link
 from asyncpg.protocol.record import Record
 
+from contextlib import suppress
+from datetime import datetime
+
 from database import db
 from utils.gettext import _
 
@@ -42,6 +45,54 @@ def keywords_list(keywords: str, lang: str) -> tuple[int, list[str]]:
         return 0, errors
 
     return 1, keywords
+
+def check_answers(answers: list[str], correct_answers: list[str]) -> list[bool]:
+    answers = answers[:len(correct_answers)]
+    result = []
+
+    for answer in range(len(answers)):
+        result.append(correct_answers[answer] == answers[answer])
+
+    return result
+
+async def delete_ended_tests(bot: Bot):
+    now = datetime.now()
+    tests = await db.test()
+
+    for test in tests:
+        if test['start_time'] + test['duration'] < now:
+            users = await db.test_users(test['code'])
+            for user in users:
+                await db.set_current_test(user['user_id'], None)
+                user_answers = await db.current_answers(user['user_id'])
+                if user_answers:
+                    msg = test['name'] + "\n"
+                    result = check_answers(user_answers, test['answers'])
+
+                    if test['rated']:
+                        await db.add_rating(user['user_id'], result.count(True))
+
+                    prev_results = await db.results(user['user_id'])
+                    if not prev_results: prev_results = []
+
+                    if len(prev_results) > 5:
+                        prev_results.pop(0)
+
+                    prev_results.append(f"{now.strftime("%d.%m.%Y")} {result.count(True)}/{len(result)}")
+                    await db.update_results(user['user_id'], prev_results)
+
+                    for answer in range(len(result)):
+                        if result[answer]:
+                            msg += f"\n{answer + 1}. ✅"
+                        else:
+                            msg += f"\n{answer + 1}. ❌"
+
+                    await db.set_current_answers(user['user_id'], [])
+
+                    with suppress(Exception):
+                        await bot.send_message(user['user_id'], msg)
+
+            await db.delete_test(test['code'])
 
 def in_list(target: str, words: list[str]) -> bool:
     for word in words:

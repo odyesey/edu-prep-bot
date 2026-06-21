@@ -3,15 +3,17 @@ from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
+from contextlib import suppress
 from datetime import datetime, timedelta
+from random import randint
 
 from database import db
-from keyboards.inline import yes_no
+from keyboards.inline import active_test_keyboard, yes_no
 from keyboards.reply import tests_keyboard, cancel_button
 from utils.tools import validate_answers
 from utils.filters import Text
 from utils.gettext import _
-from utils.states import HostTest
+from utils.states import HostTest, JoinTest
 
 router = Router()
 
@@ -160,6 +162,12 @@ async def check_answers(message: Message, state: FSMContext):
     else:
         data = await state.get_data()
 
+        while True:
+            code = randint(1000, 9999)
+
+            if await db.check_code(code):
+                break
+
         await db.add_test(rated=data['rated'],
                           name=data['name'],
                           file_id=data['file_id'],
@@ -167,9 +175,10 @@ async def check_answers(message: Message, state: FSMContext):
                           description=data['description'],
                           start_time=data['time'],
                           duration=data['duration'],
-                          answers=result[0])
+                          answers=result[0],
+                          code=code)
 
-        await message.answer(_("test_added", lang),
+        await message.answer(_("test_added", lang).format(code=f"<code>{code}</code>"),
                              reply_markup=tests_keyboard(lang))
         await state.clear()
 
@@ -188,3 +197,112 @@ async def invalid(message: Message, state: FSMContext):
         await message.answer(_("invalid_test_description", lang))
     else:
         await message.answer(_("invalid_format", lang))
+
+
+@router.message(Text("join_test"))
+async def join_test(message: Message, state: FSMContext):
+    lang = await db.lang(message.from_user.id)
+
+    await state.set_state(JoinTest.code)
+    await message.answer(_("test_enter_code", lang), reply_markup=cancel_button(lang))
+
+
+@router.message(JoinTest.code, F.text)
+async def check_code(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+    try:
+        code = int(message.text)
+        if not await db.check_code(code):
+            test = await db.test(code)
+            now = datetime.now()
+
+            if test['start_time'] <= now < test['start_time'] + test['duration']:
+                await db.set_current_test(user_id, code)
+                await state.clear()
+                total_seconds = (test['start_time'] + test['duration'] - now).total_seconds()
+                hours, remainder = divmod(total_seconds, 3600)
+                minutes, seconds = divmod(remainder, 60)
+
+                kwargs = {
+                    "caption": f"🕑 {round(hours)}:{round(minutes)}"
+                               f"\n{test['name']}\n\n{test['description']}",
+                    "reply_markup": active_test_keyboard(lang)
+                }
+
+                await message.answer(_("test_found", lang), reply_markup=tests_keyboard(lang))
+                if test['content_type'] == "document":
+                    await message.answer_document(test['file_id'], **kwargs)
+                elif test['content_type'] == "photo":
+                    await message.answer_photo(test['file_id'], **kwargs)
+
+            elif now > test['start_time'] + test['duration']:
+                await message.answer(_("test_late", lang))
+            elif now < test['start_time']:
+                await message.answer(_("test_early", lang))
+        else:
+            await message.answer(_("test_not_found", lang))
+    except ValueError:
+        await message.answer(_("test_not_found", lang))
+
+
+@router.callback_query(F.data == "submit")
+async def submit_answers(callback: CallbackQuery, state: FSMContext):
+    await callback.answer()
+
+    user_id = callback.from_user.id
+    lang = await db.lang(user_id)
+
+    test = await db.current_test(user_id)
+
+    if test:
+        await state.set_state(JoinTest.submit)
+        await callback.message.answer(_("enter_test_answers", lang),
+                                      reply_markup=cancel_button(lang))
+    else:
+        await callback.answer(_("test_not_found", lang))
+
+    await state.set_state(JoinTest.submit)
+
+
+@router.message(JoinTest.submit, F.text)
+async def process_answers(message: Message, state: FSMContext):
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+
+    result = validate_answers(message.text)
+
+    if result[1]:
+        result[1].insert(0, _("invalid_test_answers", lang))
+        await message.answer("\n".join(result[1]))
+    else:
+        await state.clear()
+        await db.set_current_answers(user_id, result[0])
+        await message.answer(_("test_answers_received", lang),
+                             reply_markup=tests_keyboard(lang))
+
+
+@router.callback_query(F.data == "refresh")
+async def refresh_test(callback: CallbackQuery):
+    user_id = callback.from_user.id
+    lang = await db.lang(user_id)
+    code = await db.current_test(user_id)
+
+    if code:
+        test = await db.test(code)
+        now = datetime.now()
+
+        total_seconds = (test['start_time'] + test['duration'] - now).total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+
+        caption = (f"🕑 {round(hours)}:{round(minutes)}"
+                   f"\n{test['name']}\n\n{test['description']}")
+
+        with suppress(Exception):
+            await callback.message.edit_caption(caption=caption,
+                                                reply_markup=active_test_keyboard(lang))
+        await callback.answer()
+    else:
+        await callback.answer(_("test_late", lang))
+

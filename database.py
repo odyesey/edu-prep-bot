@@ -8,6 +8,8 @@ from asyncpg.protocol.record import Record
 from datetime import datetime, timedelta
 from typing import Union
 
+from pyexpat.errors import messages
+
 from data.config import DB_USER, DB_PASS, DB_HOST, DB_NAME
 
 class Postgres:
@@ -61,21 +63,76 @@ class Database(Postgres):
                        description: str,
                        start_time: datetime,
                        duration: timedelta,
-                       answers: list[str]
+                       answers: list[str],
+                       code: str
                        ):
         sql = ("INSERT INTO "
-               "tests (rated, name, file_id, content_type, description, start_time, duration, answers)"
-               "VALUES ($1, $2, $3, $4, $5, $6, $7, $8)")
+               "tests (rated, name, file_id, content_type, description, start_time, duration, answers, code)"
+               "VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)")
 
         await self.execute(sql, rated,
                            name, file_id,
                            content_type, description,
                            start_time, duration,
-                           answers, execute=True)
+                           answers, code,
+                           execute=True)
+
+    async def test(self, code: int = None) -> Record:
+        if code:
+            sql = "SELECT * FROM tests WHERE code = $1"
+            return await self.execute(sql, code, fetch_row=True)
+        else:
+            sql = "SELECT * FROM tests"
+            return await self.execute(sql, fetch=True)
+
+    async def test_users(self, code: int) -> list[Record]:
+        sql = "SELECT user_id FROM users WHERE current_test = $1"
+        return await self.execute(sql, code, fetch=True)
+
+    async def delete_test(self, code: int):
+        sql = "DELETE FROM tests WHERE code = $1"
+        await self.execute(sql, code, execute=True)
+
+    async def check_code(self, code: int) -> bool:
+        sql = "SELECT code FROM tests"
+        codes =  await self.execute(sql, fetch=True)
+
+        for db_code in codes:
+            if db_code[0] == code:
+                return False
+        return True
+
+    async def set_current_test(self, user_id: int, code: int):
+        sql = "UPDATE users SET current_test = $2 WHERE user_id = $1"
+        await self.execute(sql, user_id, code, execute=True)
+
+    async def current_test(self, user_id: int) -> int:
+        sql = "SELECT current_test FROM users WHERE user_id = $1"
+        return await self.execute(sql, user_id, fetch_val=True)
+
+    async def set_current_answers(self, user_id: int, answers: list[str]):
+        sql = "UPDATE users SET current_answers = $2 WHERE user_id = $1"
+        await self.execute(sql, user_id, answers, execute=True)
+
+    async def current_answers(self, user_id: int) -> list[str]:
+        sql = "SELECT current_answers FROM users WHERE user_id = $1"
+        return await self.execute(sql, user_id, fetch_val=True)
+
+    async def results(self, user_id: int) -> list:
+        sql = "SELECT results FROM users WHERE user_id = $1"
+        return await self.execute(sql, user_id, fetch_val=True)
+
+    async def update_results(self, user_id: int, results: list):
+        sql = "UPDATE users SET results = $2 WHERE user_id = $1"
+        await self.execute(sql, user_id, results , execute=True)
 
     async def leaderboard(self) -> list[Record]:
         sql = "SELECT name, rating FROM users ORDER BY rating DESC LIMIT 20"
         return await self.execute(sql, fetch=True)
+
+    async def add_rating(self, user_id: int, rating: int):
+        sql = "UPDATE users SET rating = rating + $2 WHERE user_id = $1"
+        await self.execute(sql, user_id, rating, execute=True)
 
     async def get_rating(self, user_id: int) -> int:
         sql = "SELECT rating FROM users WHERE user_id = $1"
