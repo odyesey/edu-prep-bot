@@ -36,11 +36,12 @@ def resources_keyboard(lang: str) -> InlineKeyboardMarkup:
         [InlineKeyboardButton(text=_("saved_btn", lang), callback_data="resource_saves_1")],
     ])
 
-def pagination(lang: str, page: int, max_pages: int, prefix: str) -> InlineKeyboardMarkup:
+def pagination(lang: str, page: int, max_pages: int, prefix: str, vocab: bool = False) -> InlineKeyboardMarkup:
     buttons = [[]]
     if page > 1: buttons[0].append(InlineKeyboardButton(text=_("prev", lang), callback_data=prefix + str(page - 1)))
     if page < max_pages: buttons[0].append(InlineKeyboardButton(text=_("next", lang), callback_data=prefix + str(page + 1)))
-    buttons.append([InlineKeyboardButton(text=_("resources", lang), callback_data="resources")])
+    if not vocab:
+        buttons.append([InlineKeyboardButton(text=_("resources", lang), callback_data="resources")])
 
     return InlineKeyboardMarkup(inline_keyboard=buttons)
 

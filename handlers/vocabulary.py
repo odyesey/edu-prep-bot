@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from database import db
-from keyboards.inline import vocab_button, vocab_learning_keyboard, yes_no
+from keyboards.inline import pagination, vocab_button, vocab_learning_keyboard, yes_no
 from keyboards.reply import cancel_button, vocabulary_keyboard
 from utils.filters import PositiveId, Text
 from utils.gettext import _
@@ -251,3 +251,39 @@ async def continue_vocab(message: Message):
                                          reply_markup=vocab_learning_keyboard(lang))
     else:
         await message.answer(_("vocabulary_not_found", lang))
+
+
+@router.message(Text("saved_btn"))
+async def saved_resources(message: Message, bot: Bot):
+    user_id = message.from_user.id
+    lang = await db.lang(user_id)
+    saved = await db.saved_resources(user_id, vocab=True)
+    page = 1
+    pages = len(saved) // 10 + 1 if len(saved) % 10 else len(saved) // 10
+    if page > pages: page = pages
+    resources = []
+
+    msg = _("page_no", lang).format(page=page) + "\n"
+    for resource_id in saved[page * 10 - 10 : page * 10]:
+        resources.append(await db.resources(resource_id, vocab=True))
+    msg += await generate_populars(bot, resources, with_saves=False, vocab_list=True)
+
+    await message.answer(msg, reply_markup=pagination(lang, page, pages, "vsaved_", vocab=True))
+
+
+@router.callback_query(F.data.startswith("vsaved"))
+async def saved_resources(callback: CallbackQuery, bot: Bot):
+    user_id = callback.from_user.id
+    lang = await db.lang(user_id)
+    saved = await db.saved_resources(user_id, vocab=True)
+    page = max(int(callback.data.split("_")[1]), 1)
+    pages = len(saved) // 10 + 1 if len(saved) % 10 else len(saved) // 10
+    if page > pages: page = pages
+    resources = []
+
+    msg = _("page_no", lang).format(page=page) + "\n"
+    for resource_id in saved[page * 10 - 10 : page * 10]:
+        resources.append(await db.resources(resource_id, vocab=True))
+    msg += await generate_populars(bot, resources, with_saves=False, vocab_list=True)
+
+    await callback.message.edit_text(msg, reply_markup=pagination(lang, page, pages, "vsaved_", vocab=True))
