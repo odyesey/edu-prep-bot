@@ -191,10 +191,13 @@ class Database(Postgres):
         return await self.execute(sql, user_id, resource_id, execute=True)
 
     async def add_resource_saves(self, resource_id: int, subtract: bool = False):
-        sql = "UPDATE resources SET saves = saves + 1 WHERE resource_id = $1"
+        table = "vocabulary " if resource_id < 0 else "resources"
+        column = "vocabulary_id" if resource_id < 0 else "resource_id"
+
+        sql = f"UPDATE {table} SET saves = saves + 1 WHERE {column} = $1"
         if subtract:
-            sql = "UPDATE resources SET saves = saves - 1 WHERE resource_id = $1"
-        await self.execute(sql, resource_id, execute=True)
+            sql = f"UPDATE {table} SET saves = saves - 1 WHERE {column} = $1"
+        await self.execute(sql, abs(resource_id), execute=True)
 
     async def check_resource(self, user_id: int, resource_id: str) -> bool:
         sql = "SELECT * FROM users WHERE user_id = $1 AND $2 = ANY(saved_resources)"

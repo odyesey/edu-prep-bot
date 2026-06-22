@@ -27,7 +27,7 @@ async def search(query: InlineQuery, bot: Bot):
         sign = "-" if result.get("vocabulary_id") else ""
 
         link = await create_start_link(bot, f"{sign}{result[id_name]}")
-        delete = await db.check_resource(user_id, result[id_name])
+        delete = await db.check_resource(user_id, int(f"{sign}1") * result[id_name])
         articles.append(InlineQueryResultArticle(
             id=str(result[id_name]),
             title=result['title'],
