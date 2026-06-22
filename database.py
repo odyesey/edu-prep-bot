@@ -8,8 +8,6 @@ from asyncpg.protocol.record import Record
 from datetime import datetime, timedelta
 from typing import Union
 
-from pyexpat.errors import messages
-
 from data.config import DB_USER, DB_PASS, DB_HOST, DB_NAME
 
 class Postgres:
@@ -199,7 +197,7 @@ class Database(Postgres):
             sql = f"UPDATE {table} SET saves = saves - 1 WHERE {column} = $1"
         await self.execute(sql, abs(resource_id), execute=True)
 
-    async def check_resource(self, user_id: int, resource_id: str) -> bool:
+    async def check_resource(self, user_id: int, resource_id: int) -> bool:
         sql = "SELECT * FROM users WHERE user_id = $1 AND $2 = ANY(saved_resources)"
         result = await self.execute(sql, user_id, resource_id, fetch_val=True)
 

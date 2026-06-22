@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from database import db
-from keyboards.inline import pagination, resources_keyboard, save_resource, yes_no
+from keyboards.inline import pagination, resources_keyboard, save_resource, vocab_button, yes_no
 from keyboards.reply import cancel_button, start_keyboard
 from utils.filters import PositiveId, Text
 from utils.gettext import _
@@ -63,11 +63,18 @@ async def save_callback(callback: CallbackQuery, bot: Bot):
         await db.add_resource_saves(resource_id, mode)
 
     await db.save_resource(user_id, resource_id, mode)
+
+    if resource_id < 0:
+        continue_ = await db.check_current_vocab(user_id, abs(resource_id))
+        reply_markup = vocab_button(lang, abs(resource_id), continue_, not mode)
+    else:
+        reply_markup = save_resource(lang, resource_id, not mode)
+
     if callback.message:
-        await callback.message.edit_reply_markup(reply_markup=save_resource(lang, resource_id, not mode))
+        await callback.message.edit_reply_markup(reply_markup=reply_markup)
     else:
         await bot.edit_message_reply_markup(inline_message_id=callback.inline_message_id,
-                                            reply_markup=save_resource(lang, resource_id, not mode))
+                                            reply_markup=reply_markup)
     if mode:
         await callback.answer(_("deleted", lang))
     else:

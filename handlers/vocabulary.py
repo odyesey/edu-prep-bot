@@ -34,11 +34,11 @@ async def send_vocab(message: Message, command: CommandObject):
     try:
         vocab = await db.resources(int(payload), vocab=True)
         continue_ = await db.check_current_vocab(user_id, int(vocab['vocabulary_id']))
+        delete = await db.check_resource(user_id, int(payload))
         if vocab:
             await message.answer(vocab['title'],
-                                 reply_markup=vocab_button(lang,
-                                                           int(vocab['vocabulary_id']),
-                                                           continue_))
+                                 reply_markup=vocab_button(lang, int(vocab['vocabulary_id']),
+                                                           continue_, delete))
         else:
             await message.answer(_("vocabulary_not_found", lang))
     except ValueError:
@@ -97,10 +97,10 @@ async def start_vocab(callback: CallbackQuery):
     else:
         vocab = await db.resources(vocab_id, vocab=True)
         continue_ = await db.check_current_vocab(user_id, int(vocab['vocabulary_id']))
+        delete = await db.check_resource(user_id, -vocab_id)
         await callback.message.edit_text(vocab['title'],
-                                         reply_markup=vocab_button(lang,
-                                                                   int(vocab['vocabulary_id']),
-                                                                   continue_))
+                                         reply_markup=vocab_button(lang, int(vocab['vocabulary_id']),
+                                                                   continue_, delete))
 
 
 @router.callback_query(F.data.startswith("word"))
