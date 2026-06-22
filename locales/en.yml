@@ -10,17 +10,138 @@ welcome: >
   All materials here are "from people to people". That is, anyone can upload their own materials
 start: "🔄️ Bot successfully updated"
 main_menu: "🔝 Main menu"
+verify_requirements: |
+  By verifying account, you can host rated tests 
+  For this you have to own channel with at least 20,000 subscribers
+  Bot must be admin to count channel users in this channel
+already_verified: "Your account already verified"
+start_verify: "✅ Start verification"
+send_channel_data: "Send channel data by clicking button below"
+bot_not_admin: "Bot is not admin in this channel"
+user_not_admin: "You are not admin of this channel"
+not_enough_members: "Not enough channel subscribers"
+user_verified: "✅ Your account verified successfully"
 tests_menu: "📄 Tests menu"
+test_rated: "Is this rated test?"
+test_name: "Enter test name"
+not_rated_test_name: "Enter unrated test name"
+invalid_test_name: "Test name must consist of text only"
+send_test_file: "Send test questions as a single file or image"
+test_description_detected: "Would you like to use file/image's caption as a test description?"
+test_caption_limit: >
+  File/image's caption is too long.
+  Please send a test description that does not exceed 1024 characters
+enter_test_description: "Enter test description"
+invalid_test_description: "Test description must consist of text only"
+enter_test_timestamp: |
+  Enter test date and time
+  Format: <code>dd.mm.yyyy hh:mm</code>
+invalid_test_time: "Test cannot start before current time"
+enter_test_duration: |
+  Enter test duration
+  Format: <code>hh:mm</code>
+invalid_test_duration: "Test duration cannot exceed 48 hours"
+enter_test_answers: |
+  Enter test answers
+  Format:
+  1. a
+  2. b
+  3. 48
+  4. 12.8
+invalid_test_answers: "Format error detected in answers below"
+test_added: |
+  ✅ Test added successfully
+  Test code: {code}
+test_enter_code: "Enter test code"
+test_submit_answers: "⬆️ Submit answers"
+test_answers_received: >
+  Answers received. Results will be sent after the test.
+  You can re-submit answers until the end of test
+test_early: "Test has not started yet"
+test_late: "Test finished"
+test_found: "Test found"
+test_not_found: "Test not found"
+profile_info: |
+  Name: {name}
+  ID: {user_id}
+  Rating: {rating}
+
+  {verified}
+verified_user: "Verified"
+not_verified_user: "Not verified"
+popular_resources: "Popular resources"
+resource_title: "Enter resource name"
+resource_title_limit: |
+  Resource name should not exceed 50 characters
+  Length of your text: {title_len}
+resource_file: "Send single resource file (file, video, image)"
+resource_use_caption: "Would you like to use resource's caption as a resource description?"
+resource_caption_limit: >
+  Resource's caption is too long.
+  Please send a resource description that does not exceed 1024 characters
+resource_description: >
+  Enter resource description.
+  This helps other users know what the resource is about
+resource_added: "✅ Resource added successfully"
+resource_not_found: "Resource not found"
+resource_save: "⭐ Save"
+resource_delete: "🗑️ Delete"
+popular_vocabularies: "Popular vocabularies"
+vocabulary_title: "Enter vocabulary name"
+vocabulary_title_limit: |
+  Vocabulary name should not exceed 50 characters
+  Length of your text: {title_len}
+vocabulary_words: |
+  Send words and their translation
+  Example:
+  hello - salom
+  goodbye - hayr
+vocabulary_words_error: "Errors detected in rows below"
+vocabulary_hashtag_detected: "# symbol cannot be used"
+vocabulary_added: "✅ Vocabulary added successfully"
+vocabulary_not_found: "Vocabulary not found"
+vocabulary_learn_finished: "This word cycle is finished"
+vocabulary_learn_completed: "🎉 You have memorized all the words"
+vocabulary_reset_confirm: >
+  If you start a new vocabulary, old progress will be lost
+  Are you sure you want to continue?
+description_limit: |
+  Text should not exceed 1024 characters
+  Length of your text: {desc_len}
+keywords: |
+  Send up to ten keywords, separated by commas
+  They simplify search for other users
+  Example: sat, english, practice
+keywords_limit: "Keywords exceeded ten"
+keywords_duplicate: "Repeated keywords detected"
+keywords_error: "Errors found in keywords:"
+invalid_format: "Invalid format"
+page_no: "Page: {page}"
+canceled: "Canceled"
 tests: "📝 Tests"
 resources: "🗂 Study resources"
 vocabulary: "📚 Vocabulary"
 leaderboard: "🏆 Leaderboard"
 profile: "👤 Profile"
 change_lang: "🌐 Change language"
-host_test: "➕ Host a test"
-join_test: "➡️ Join the test"
+host_test: "➕ Host test"
+add_resource: "➕ Add resource"
+join_test: "➡️ Join test"
 previous_results: "📄 Previous results"
-yes: "✅ Yes"
-no: "❌ No"
+vocabulary_add: "➕ Add vocabulary"
+send_channel: "📢 Send channel"
+yes_: "✅ Yes"
+no_: "❌ No"
+correct: "✅ Correct"
+incorrect: "❌ Incorrect"
+saved: "Saved"
+deleted: "Deleted"
+saved_btn: "⭐ Saves"
+begin: "▶️ Begin"
+continue: "➡️ Continue"
+refresh: "🔄️ Refresh"
+restart: "🔄️ Restart"
+prev: "⬅️ Previous"
+next: "➡️ Next"
 cancel: "🚫 Cancel"
 back: "🔙 Go back"

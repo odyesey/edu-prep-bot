@@ -55,7 +55,7 @@ test_added: |
 test_enter_code: "Test kodini kiriting"
 test_submit_answers: "⬆️ Javoblarni yuborish"
 test_answers_received: >
-  Javoblar qabul qilindi. Test oxirida natijalar yuboriladi.
+  Javoblar qabul qilindi. Test tugasa natijalar yuboriladi.
   Javoblarni test yakuniga qadar qayta yuborishingiz mumkin
 test_early: "Test hali boshlanmadi"
 test_late: "Test tugagan"
@@ -120,7 +120,7 @@ page_no: "Sahifa: {page}"
 canceled: "Bekor qilindi"
 tests: "📝 Testlar"
 resources: "🗂 O'quv resurslari"
-vocabulary: "📚 So'z yodlash"
+vocabulary: "📚 Lug'at"
 leaderboard: "🏆 Faollar"
 profile: "👤 Profil"
 change_lang: "🌐 Tilni o'zgartirish"
