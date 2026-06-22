@@ -12,6 +12,9 @@ This bot helps you study by providing community study materials (Videos, images,
 
 And many more features awaiting
 
+### Copyright
+Emoji images in inline search are from https://emoji.aranja.com/
+
 ## Setup
 ### Step 1
 Before launching bot, create `.env` file in root folder of the project and fill details below
